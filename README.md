@@ -22,13 +22,21 @@ This is a sample ASP.NET Core Razor Pages application that demonstrates how to u
 3. Update the database.
 
 Command examples:
-To run a local MSSQL database in a container image:
+
+To run a local MSSQL database in a docker container image:
 
 ```bash
+# Start the MSSQL container
 docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server
+
+# Wait for the SQL Server to start
+sleep 20
+
+# Execute the SQL script to create the database
+docker exec -i sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q "CREATE DATABASE RazorPagesMovieContext;"
 ```
 
-dotnet commands:
+dotnet commands to pull dependencies, build binaries and run database migrations:
 ```bash
 dotnet restore RazorPagesMovie.csproj
 dotnet build RazorPagesMovie.csproj
