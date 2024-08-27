@@ -23,7 +23,7 @@ This is a sample ASP.NET Core Razor Pages application that demonstrates how to u
 
 Command examples:
 
-To run a local MSSQL database in a docker container image:
+To run a local dev MSSQL database in a docker container image:
 
 ```bash
 # Start the MSSQL container
@@ -35,6 +35,10 @@ sleep 20
 # Execute the SQL script to create the database
 docker exec -i sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' -Q "CREATE DATABASE RazorPagesMovieContext;"
 ```
+
+> **Friendly Reminder:** The command above is intended for local development and testing environments only. For production, it's highly recommended to use a managed SQL Server instance. If you're encountering SSL certificate verification errors and don't plan to use SSL, you can bypass this by adding the `-C` option to the `sqlcmd` command. This option tells the client to trust the server's certificate without validation.
+
+
 
 dotnet commands to pull dependencies, build binaries and run database migrations:
 ```bash
