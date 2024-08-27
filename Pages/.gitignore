@@ -1,0 +1,51 @@
+# Ignore build output directories
+bin/
+obj/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.generated.cs
+*.generated.sln
+
+# Logs
+*.log
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored if you have a NuGet.config file in the root of your repository
+packages/
+# Uncomment if necessary however generally it will be restored by NuGet
+# !packages/build/
+# !packages/repositories.config
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Entity Framework Migrations
+Migrations/
+
+# Exclude appsettings files
+appsettings*.json
+
+# Exclude publish output
+publish/
+
+# Exclude temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.DS_Store
