@@ -1,7 +1,15 @@
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/web.config
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/appsettings.Development.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/appsettings.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/appsettings_SQLite.Development.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/appsettings_SQLite.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/appsettings.Development.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/appsettings.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/appsettings_SQLite.Development.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/appsettings_SQLite.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/RazorPagesMovie.deps.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/RazorPagesMovie.runtimeconfig.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/RazorPagesMovie.staticwebassets.endpoints.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/RazorPagesMovie.staticwebassets.runtime.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/RazorPagesMovie.staticwebassets.endpoints.json
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/RazorPagesMovie
@@ -282,3 +290,11 @@
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/obj/Debug/net9.0/RazorPagesMovie.pdb
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/obj/Debug/net9.0/RazorPagesMovie.genruntimeconfig.cache
 /Users/tsvi/git_projects/dotnet_RazorPagesMovie/obj/Debug/net9.0/ref/RazorPagesMovie.dll
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/web.config
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/appsettings.Development.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/appsettings.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/appsettings_SQLite.Development.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/appsettings_SQLite.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/RazorPagesMovie.deps.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/RazorPagesMovie.runtimeconfig.json
+/Users/tsvi/git_projects/dotnet_RazorPagesMovie/bin/Debug/net9.0/publish/publish/RazorPagesMovie.staticwebassets.endpoints.json
