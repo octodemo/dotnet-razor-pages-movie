@@ -50,5 +50,5 @@ jobs:
       uses: actions/upload-artifact@v4.3.6
 
       with:
-        name: RazorPagesMovie
+        name: RazorPagesMovie-${{ github.run_id }}-${{ github.run_attempt }}
         path: ./publish
