@@ -18,15 +18,16 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.1.7
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: '9.0.x'
     
     - name: Cache NuGet packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4.0.2
+
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
@@ -46,7 +47,8 @@ jobs:
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
 
     - name: Upload published app
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.3.6
+
       with:
         name: RazorPagesMovie
         path: ./publish
