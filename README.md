@@ -1,6 +1,6 @@
 # Dotnet Razor Pages Movie App
 
-This is a sample ASP.NET Core Razor Pages application that demonstrates how to use Razor Pages to create dynamic, data-driven web applications.
+RazorPagesMovie is a demo application that allows users to discover, manage, and track their favorite movies. It features an extensive movie database, personalized recommendations, watchlist management, and detailed movie information. The app is built with ASP.NET Core Razor Pages and demonstrates the use of modern web development practices.
 
 ## Features
 

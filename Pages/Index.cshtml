@@ -4,7 +4,22 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="welcome-container">
+    <h1 class="display-4">Welcome to RazorPagesMovie</h1>
+    <p>Discover and manage your favorite movies with ease.</p>
+    <div class="features">
+        <div class="feature">
+            <h2>🎬 <a href="/Movies/Database">Extensive Movie Database</a></h2>
+            <p>Browse through a vast collection of movies, from classics to the latest releases.</p>
+        </div>
+        <div class="feature">
+            <h2>⭐ <a href="/Movies/Recommendations">Personalized Recommendations</a></h2>
+            <p>Get movie suggestions tailored to your taste.</p>
+        </div>
+        <div class="feature">
+            <h2>📅 <a href="/Movies/Watchlist">Track Your Watchlist</a></h2>
+            <p>Keep track of movies you want to watch and those you've already seen.</p>
+        </div>
+    </div>
+    <a href="/Movies/Index" class="btn btn-primary">Browse Movies</a>
 </div>

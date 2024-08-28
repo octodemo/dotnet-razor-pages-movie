@@ -68,6 +68,141 @@ namespace RazorPagesMovie.Models
                         Genre = "Western",
                         Price = 3.99M,
                         Rating = "NA"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Inception",
+                        ReleaseDate = DateTime.Parse("2010-7-16"),
+                        Genre = "Sci-Fi",
+                        Price = 9.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Matrix",
+                        ReleaseDate = DateTime.Parse("1999-3-31"),
+                        Genre = "Action",
+                        Price = 8.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Interstellar",
+                        ReleaseDate = DateTime.Parse("2014-11-7"),
+                        Genre = "Sci-Fi",
+                        Price = 10.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Dark Knight",
+                        ReleaseDate = DateTime.Parse("2008-7-18"),
+                        Genre = "Action",
+                        Price = 9.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Pulp Fiction",
+                        ReleaseDate = DateTime.Parse("1994-10-14"),
+                        Genre = "Crime",
+                        Price = 7.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Inception",
+                        ReleaseDate = DateTime.Parse("2010-7-16"),
+                        Genre = "Sci-Fi",
+                        Price = 9.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Matrix",
+                        ReleaseDate = DateTime.Parse("1999-3-31"),
+                        Genre = "Action",
+                        Price = 8.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Interstellar",
+                        ReleaseDate = DateTime.Parse("2014-11-7"),
+                        Genre = "Sci-Fi",
+                        Price = 10.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Dark Knight",
+                        ReleaseDate = DateTime.Parse("2008-7-18"),
+                        Genre = "Action",
+                        Price = 9.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Pulp Fiction",
+                        ReleaseDate = DateTime.Parse("1994-10-14"),
+                        Genre = "Crime",
+                        Price = 7.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Shawshank Redemption",
+                        ReleaseDate = DateTime.Parse("1994-9-23"),
+                        Genre = "Drama",
+                        Price = 8.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Forrest Gump",
+                        ReleaseDate = DateTime.Parse("1994-7-6"),
+                        Genre = "Drama",
+                        Price = 7.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Godfather",
+                        ReleaseDate = DateTime.Parse("1972-3-24"),
+                        Genre = "Crime",
+                        Price = 9.99M,
+                        Rating = "R"
+                    },
+
+                    new Movie
+                    {
+                        Title = "The Lord of the Rings: The Fellowship of the Ring",
+                        ReleaseDate = DateTime.Parse("2001-12-19"),
+                        Genre = "Fantasy",
+                        Price = 10.99M,
+                        Rating = "PG-13"
+                    },
+
+                    new Movie
+                    {
+                        Title = "Star Wars: Episode IV - A New Hope",
+                        ReleaseDate = DateTime.Parse("1977-5-25"),
+                        Genre = "Sci-Fi",
+                        Price = 8.99M,
+                        Rating = "PG"
                     }
                 );
                 context.SaveChanges();
