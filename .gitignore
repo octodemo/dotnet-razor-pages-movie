@@ -1,6 +1,8 @@
-# Ignore build output directories
-bin/
-obj/
+# Ignore build output directories also bin and obj folders and subfolders
+**/bin/*
+**/obj/*
+**/bin/
+**/obj/
 
 # User-specific files
 *.rsuser
