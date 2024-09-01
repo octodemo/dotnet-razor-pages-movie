@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Xunit;
 using RazorPagesMovie.Pages.Movies;
+using System.Collections.Generic;
+using RazorPagesMovie.Models;
 
 namespace RazorPagesMovie.Tests
 {

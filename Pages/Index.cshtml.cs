@@ -14,7 +14,8 @@ namespace RazorPagesMovie.Pages
 
         public void OnGet()
         {
-
+            // Implement the OnGet method
+            _logger.LogInformation("Index page visited at {time}", DateTime.UtcNow);
         }
     }
 }

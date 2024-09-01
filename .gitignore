@@ -4,6 +4,9 @@
 **/bin/
 **/obj/
 
+# Ignore local shell scripts
+build*.sh
+
 # User-specific files
 *.rsuser
 *.suo

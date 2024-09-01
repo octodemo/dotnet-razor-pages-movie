@@ -12,6 +12,8 @@ namespace RazorPagesMovie.Tests
             var movie = new Movie { Title = "Old Title" };
             movie.Title = "New Title";
             Assert.Equal("New Title", movie.Title);
+            // assert not equal
+            Assert.NotEqual("Old Title", movie.Title);
         }
     }
 }
