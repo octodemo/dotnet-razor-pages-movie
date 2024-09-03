@@ -46,10 +46,17 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
+    
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        language: [csharp]
 
     steps:
     - name: Checkout code
@@ -85,10 +92,13 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
-
+    needs: 
+      - build
+      - runner-indexes
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        index: ${{ fromJson(needs.runner-indexes.outputs.json) }}
 
     steps:
     - name: Checkout code
@@ -101,12 +111,41 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
-
-    - name: Run tests
-      run: dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --logger "console;verbosity=detailed" --logger "trx;LogFileName=testresults.trx" --results-directory ./testresults
+    
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
+    
+    - uses: chaosaffe/split-tests@v1-alpha.1
+      id: split-test
+      name: Split Tests ${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+      with:
+        glob: RazorPagesMovie.Tests/**/*Tests.cs
+        split-total: ${{ env.total-runners }}
+        split-index: ${{ matrix.os.index }}
+        line-count: true
+    
+    - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
+    - run: |
+        # --filter "ClassName~Namespace.ClassName"
+        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ steps.split-test.outputs.test-suite }}" --logger "console;verbosity=normal" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
 
     - name: Upload test results
       uses: actions/upload-artifact@v4.3.6
       with:
         name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
         path: ./testresults
+
+
+  runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
+    runs-on: ubuntu-latest
+    name: Generate runner indexes
+    outputs:
+      json: ${{ steps.generate-index-list.outputs.json }} # output the json with the runner indexes
+    steps:
+      - id: generate-index-list # generate the runner indexes and save them to the json file
+        run: |
+          MAX_INDEX=$((${{ env.total-runners }}-1)) # calculate the max index
+          INDEX_LIST=$(seq 0 ${MAX_INDEX}) # generate the list of indexes
+          INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST}) # convert the list to the json
+          echo "json=${INDEX_JSON}" >> $GITHUB_OUTPUT # save the json to the GITHUB_OUTPUT environment variable
