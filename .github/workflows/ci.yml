@@ -143,12 +143,12 @@ jobs:
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
         dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
-    # - name: Upload test results
-    #   uses: actions/upload-artifact@v4.3.6
-    #   with:
-    #     name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
-    #     path: ./testresults
-
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4.3.6
+      with:
+        name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ./testresults
 
   runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
     runs-on: ubuntu-latest
