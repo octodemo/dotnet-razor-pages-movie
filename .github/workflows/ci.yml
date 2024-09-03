@@ -132,6 +132,11 @@ jobs:
         split-index: ${{ matrix.index }}
         line-count: true
     
+    - name: Verify split_tests binary
+      run: |
+        ls -l ./split_tests
+        file ./split_tests
+    
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
         dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ steps.split-test.outputs.test-suite }}" --logger "console;verbosity=normal" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
