@@ -122,7 +122,7 @@ jobs:
       with:
         glob: RazorPagesMovie.Tests/**/*Tests.cs
         split-total: ${{ env.total-runners }}
-        split-index: ${{ matrix.os.index }}
+        split-index: ${{ matrix.index }}
         line-count: true
     
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
