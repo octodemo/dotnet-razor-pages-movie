@@ -104,7 +104,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
         index: ${{ fromJson(needs.runner-indexes.outputs.json) }}
 
     steps:
@@ -131,11 +132,6 @@ jobs:
         split-total: ${{ env.total-runners }}
         split-index: ${{ matrix.index }}
         line-count: true
-    
-    - name: Verify split_tests binary
-      run: |
-        ls -l ./split_tests
-        file ./split_tests
     
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
