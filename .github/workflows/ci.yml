@@ -44,57 +44,57 @@ env:
 
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    name: Build ${{ matrix.os }}
-    permissions:
-      actions: read
-      contents: read
-      packages: write
-      id-token: write
-      security-events: write
+  # build:
+  #   runs-on: ${{ matrix.os }}
+  #   name: Build ${{ matrix.os }}
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     packages: write
+  #     id-token: write
+  #     security-events: write
     
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        language: [csharp]
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest, macos-latest]
+  #       language: [csharp]
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.1.7
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4.1.7
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4.0.1
-      with:
-        dotnet-version: '6.0.x'
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v4.0.1
+  #     with:
+  #       dotnet-version: '6.0.x'
     
-    - name: Cache NuGet packages
-      uses: actions/cache@v4.0.2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+  #   - name: Cache NuGet packages
+  #     uses: actions/cache@v4.0.2
+  #     with:
+  #       path: ~/.nuget/packages
+  #       key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+  #       restore-keys: |
+  #         ${{ runner.os }}-nuget-
 
-    - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.csproj
+  #   - name: Restore dependencies
+  #     run: dotnet restore RazorPagesMovie.csproj
 
-    - name: Build
-      run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
+  #   - name: Build
+  #     run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
-    - name: Publish
-      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
+  #   - name: Publish
+  #     run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
 
-    - name: Upload published app
-      uses: actions/upload-artifact@v4.3.6
-      with:
-        name: RazorPagesMovie-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
-        path: ./publish
+  #   - name: Upload published app
+  #     uses: actions/upload-artifact@v4.3.6
+  #     with:
+  #       name: RazorPagesMovie-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+  #       path: ./publish
 
   test:
     runs-on: ${{ matrix.os }}
     needs: 
-      - build
+      # - build
       - runner-indexes
     
     permissions:
@@ -149,7 +149,7 @@ jobs:
       if : always()
       uses: actions/upload-artifact@v4.3.6
       with:
-        name: testresults-${{ github.run_id }}
+        name: testresults-${{ github.run_id }}-split-${{ matrix.index }}
         path: ./testresults
         if-no-files-found: warn
         compression-level: 6
