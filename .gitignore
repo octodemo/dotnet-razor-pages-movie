@@ -4,6 +4,9 @@
 **/bin/
 **/obj/
 
+# Ignore testresults folder
+**/TestResults/*
+
 # Ignore local shell scripts
 build*.sh
 

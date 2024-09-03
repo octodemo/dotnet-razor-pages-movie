@@ -1,15 +1,47 @@
-name: Build, Test, and Publish
+# name of the workflow. Link to the documentation - https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#name
+name: CI
+# running on push to main and develop branches or on pull reuqests or on manual trigger
+on: 
+  # manual trigger
+  workflow_dispatch:
+    inputs:
+      ssh_debug_enabled:
+        type: boolean
+        description: 'Run the build/test with ssh debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+      debug_deployment:
+        type: boolean
+        description: 'Run the pipeline with debug deployment enabled'
+        required: false
+        default: false
 
-on:
+  # runnnig on push to main and develop branches
   push:
     branches:
       - main
+      - develop
+    paths-ignore:
+      - '**/README.md'
+      - '.devcontainer/**'
+  # running on pull requests to main and develop branches
   pull_request:
     branches:
       - main
+      - develop
     paths-ignore:
-      - 'README.md'
-  workflow_dispatch:
+      - '**/README.md'
+      - '.devcontainer/**'
+
+# defining global environment variables for all jobs
+env:
+  # define runner indexes for tests splitting and parallel execution
+  total-runners: 5
+  # defining GitHub registry for docker images
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
 
 jobs:
   build:
@@ -30,7 +62,6 @@ jobs:
     
     - name: Cache NuGet packages
       uses: actions/cache@v4.0.2
-
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
@@ -43,15 +74,39 @@ jobs:
     - name: Build
       run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --configuration Release --no-build
-
     - name: Publish
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
 
     - name: Upload published app
       uses: actions/upload-artifact@v4.3.6
-
       with:
         name: RazorPagesMovie-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
         path: ./publish
+
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.7
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.0.1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
+
+    - name: Run tests
+      run: dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --logger "console;verbosity=detailed" --logger "trx;LogFileName=testresults.trx" --results-directory ./testresults
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4.3.6
+      with:
+        name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ./testresults
