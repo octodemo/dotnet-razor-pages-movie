@@ -96,6 +96,12 @@ jobs:
     needs: 
       # - build
       - runner-indexes
+    
+    permissions:
+      contents: read # read access to the repository contents
+      packages: write # write access to the repository packages
+      id-token: write # write access to the repository id token
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
