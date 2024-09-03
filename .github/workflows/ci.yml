@@ -147,7 +147,7 @@ jobs:
     - name: Upload test results
       uses: actions/upload-artifact@v4.3.6
       with:
-        name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.run_number }}-${{ github.sha }}
+        name: testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.index }}-${{ github.sha }}
         path: ./testresults
         if-no-files-found: warn
         compression-level: 6
