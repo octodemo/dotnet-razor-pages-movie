@@ -153,7 +153,6 @@ jobs:
         path: ./testresults
         if-no-files-found: warn
         compression-level: 6
-        overwrite: true
 
   runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
     runs-on: ubuntu-latest
