@@ -44,57 +44,57 @@ env:
 
 
 jobs:
-  # build:
-  #   runs-on: ${{ matrix.os }}
-  #   name: Build ${{ matrix.os }}
-  #   permissions:
-  #     actions: read
-  #     contents: read
-  #     packages: write
-  #     id-token: write
-  #     security-events: write
+  build:
+    runs-on: ${{ matrix.os }}
+    name: Build ${{ matrix.os }}
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
     
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest, windows-latest, macos-latest]
-  #       language: [csharp]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        language: [csharp]
 
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4.1.7
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.7
 
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v4.0.1
-  #     with:
-  #       dotnet-version: '6.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.0.1
+      with:
+        dotnet-version: '6.0.x'
     
-  #   - name: Cache NuGet packages
-  #     uses: actions/cache@v4.0.2
-  #     with:
-  #       path: ~/.nuget/packages
-  #       key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-nuget-
+    - name: Cache NuGet packages
+      uses: actions/cache@v4.0.2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
-  #   - name: Restore dependencies
-  #     run: dotnet restore RazorPagesMovie.csproj
+    - name: Restore dependencies
+      run: dotnet restore RazorPagesMovie.csproj
 
-  #   - name: Build
-  #     run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
+    - name: Build
+      run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
-  #   - name: Publish
-  #     run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
+    - name: Publish
+      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
 
-  #   - name: Upload published app
-  #     uses: actions/upload-artifact@v4.3.6
-  #     with:
-  #       name: RazorPagesMovie-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
-  #       path: ./publish
+    - name: Upload published app
+      uses: actions/upload-artifact@v4.3.6
+      with:
+        name: RazorPagesMovie-${{ matrix.os }}
+        path: ./publish
 
   test:
     runs-on: ${{ matrix.os }}
     needs: 
-      # - build
+      - build
       - runner-indexes
     
     permissions:
@@ -116,10 +116,24 @@ jobs:
       uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: '6.0.x'
-
-    - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
+  
+    - name: Download build output
+      uses: actions/download-artifact@v4.1.8
+      with:
+        name: RazorPagesMovie-${{ matrix.os }}
+        path: ./publish
     
+    - name: Cache NuGet packages
+      uses: actions/cache@v4.0.2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore RazorPagesMovie.csproj
+
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
@@ -143,7 +157,7 @@ jobs:
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
         mkdir -p ./testresults
-        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
+        dotnet test ./publish/RazorPagesMovie.Tests.dll --no-build --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
     
     - name: Upload test results
       if : always()
