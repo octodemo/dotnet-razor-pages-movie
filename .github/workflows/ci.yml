@@ -133,9 +133,16 @@ jobs:
         split-index: ${{ matrix.index }}
         line-count: true
     
+    - name: Convert Test File Path to Fully Qualified Name
+      id: convert-path
+      run: |
+        test_suite="${{ steps.split-test.outputs.test-suite }}"
+        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g')
+        echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
+    
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
-        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ steps.split-test.outputs.test-suite }}" --logger "console;verbosity=normal" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
+        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=normal" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
       working-directory: ${{ github.workspace }}
     # - name: Upload test results
     #   uses: actions/upload-artifact@v4.3.6
