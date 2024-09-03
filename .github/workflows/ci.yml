@@ -36,7 +36,7 @@ on:
 # defining global environment variables for all jobs
 env:
   # define runner indexes for tests splitting and parallel execution
-  total-runners: 5
+  total-runners: 2
   # defining GitHub registry for docker images
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
@@ -123,17 +123,17 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
     
-    - uses: chaosaffe/split-tests@v1-alpha.1
+    - name: Split Tests
       id: split-test
-      name: Split Tests ${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+      uses: chaosaffe/split-tests@v1-alpha.1
       with:
         glob: RazorPagesMovie.Tests/**/*Tests.cs
         split-total: ${{ env.total-runners }}
         split-index: ${{ matrix.index }}
+        line-count: true
     
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
-        # --filter "ClassName~Namespace.ClassName"
         dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ steps.split-test.outputs.test-suite }}" --logger "console;verbosity=normal" --logger "trx;LogFileName=testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
 
     - name: Upload test results
