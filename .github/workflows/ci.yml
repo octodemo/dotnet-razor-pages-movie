@@ -134,8 +134,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
 
-    - name: Build Test project
-      run: dotnet build RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --configuration Release --no-restore
     - name: Convert Test File Path to Fully Qualified Name
       id: convert-path
       run: |
@@ -146,7 +144,7 @@ jobs:
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
         mkdir -p ./testresults
-        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --no-build --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
+        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
     
     - name: Upload test results
       if : always()
