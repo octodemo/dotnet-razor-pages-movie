@@ -118,12 +118,6 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
-
-    - name: Build Test project
-      run: dotnet build RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --configuration Release --no-restore
-
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
@@ -136,7 +130,12 @@ jobs:
         split-total: ${{ env.total-runners }}
         split-index: ${{ matrix.index }}
         line-count: true
-    
+
+    - name: Restore dependencies
+      run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
+
+    - name: Build Test project
+      run: dotnet build RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --configuration Release --no-restore
     - name: Convert Test File Path to Fully Qualified Name
       id: convert-path
       run: |
