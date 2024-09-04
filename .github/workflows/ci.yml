@@ -117,6 +117,14 @@ jobs:
       uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: '6.0.x'
+    
+    - name: Cache NuGet packages
+      uses: actions/cache@v4.0.2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
