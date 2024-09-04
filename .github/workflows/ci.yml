@@ -150,8 +150,7 @@ jobs:
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
     
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
-    - run: |
-        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
+    - run: dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
     
     - name: Upload test results
       if : always()
