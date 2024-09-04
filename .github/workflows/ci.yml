@@ -98,7 +98,7 @@ jobs:
       uses: actions/upload-artifact@v4.3.6
       with:
         name: RazorPagesMovie.Tests-${{ matrix.os }}
-        path: RazorPagesMovie.Tests/bin/Debug/net6.0/RazorPagesMovie.Tests.dll
+        path: ./RazorPagesMovie.Tests/bin/Debug/net6.0/RazorPagesMovie.Tests.dll
 
   test:
     runs-on: ${{ matrix.os }}
