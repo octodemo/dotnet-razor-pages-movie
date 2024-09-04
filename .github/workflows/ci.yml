@@ -117,12 +117,6 @@ jobs:
       uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: '6.0.x'
-  
-    - name: Download build output
-      uses: actions/download-artifact@v4.1.8
-      with:
-        name: RazorPagesMovie.Tests-${{ matrix.os }}
-        path: RazorPagesMovie.Tests/bin/Release/net6.0/RazorPagesMovie.Tests.dll
 
     - name: Restore dependencies
       run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
