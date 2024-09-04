@@ -77,9 +77,9 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.csproj
+      run: dotnet restore RazorPagesMovie90.generated.sln
 
-    - name: Build
+    - name: Build App project
       run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
     - name: Publish
@@ -90,6 +90,15 @@ jobs:
       with:
         name: RazorPagesMovie-${{ matrix.os }}
         path: ./publish
+
+    - name: Build Test project
+      run: dotnet build RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --configuration Release --no-restore
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4.3.6
+      with:
+        name: RazorPagesMovie.Tests-${{ matrix.os }}
+        path: RazorPagesMovie.Tests/bin/Debug/net6.0/RazorPagesMovie.Tests.dll
 
   test:
     runs-on: ${{ matrix.os }}
@@ -120,19 +129,8 @@ jobs:
     - name: Download build output
       uses: actions/download-artifact@v4.1.8
       with:
-        name: RazorPagesMovie-${{ matrix.os }}
-        path: ./publish
-    
-    - name: Cache NuGet packages
-      uses: actions/cache@v4.0.2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-    
-    - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.csproj
+        name: RazorPagesMovie.Tests-${{ matrix.os }}
+        path: RazorPagesMovie.Tests/bin/Debug/net6.0/RazorPagesMovie.Tests.dll
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
