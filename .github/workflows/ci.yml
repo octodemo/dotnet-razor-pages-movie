@@ -36,7 +36,7 @@ on:
 # defining global environment variables for all jobs
 env:
   # define runner indexes for tests splitting and parallel execution
-  total-runners: 2
+  total-runners: 4
   # defining GitHub registry for docker images
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>

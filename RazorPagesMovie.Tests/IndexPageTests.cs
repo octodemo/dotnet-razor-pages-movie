@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace RazorPagesMovie.Tests
 {
-    public class IndexPageTests
+    public class IndexPageTests : IDisposable
     {
         private readonly DbContextOptions<RazorPagesMovieContext> _options;
         private readonly ITestOutputHelper _output;
@@ -22,6 +22,9 @@ namespace RazorPagesMovie.Tests
             _options = new DbContextOptionsBuilder<RazorPagesMovieContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
+
+            // Ensure the database is clean before starting the tests
+            ClearDatabase();
 
             // Seed the in-memory database with test data
             using (var context = new RazorPagesMovieContext(_options))
@@ -71,19 +74,22 @@ namespace RazorPagesMovie.Tests
             // Arrange
             using (var context = new RazorPagesMovieContext(_options))
             {
-                context.Movie.RemoveRange(context.Movie);
-                context.SaveChanges();
-
+                if (context.Movie.Any())
+                {
+                    context.Movie.RemoveRange(context.Movie);
+                    context.SaveChanges();
+                }
+        
                 var pageModel = new IndexModel(context);
-
+        
                 // Act
                 await pageModel.OnGetAsync();
-
+        
                 // Assert
                 Assert.NotNull(pageModel.Movie);
                 Assert.IsType<List<Movie>>(pageModel.Movie);
                 Assert.Empty(pageModel.Movie);
-
+        
                 // Enhanced output to console
                 _output.WriteLine("=== Test Output ===");
                 _output.WriteLine("Test: OnGetAsync_EmptyDatabase");
@@ -406,6 +412,21 @@ namespace RazorPagesMovie.Tests
                 new Movie { Title = "Movie 1", Genre = "Genre 1", Price = 10M, ReleaseDate = DateTime.Parse("2023-01-01") },
                 new Movie { Title = "Movie 2", Genre = "Genre 2", Price = 15M, ReleaseDate = DateTime.Parse("2023-06-01") }
             };
+        }
+
+        private void ClearDatabase()
+        {
+            using (var context = new RazorPagesMovieContext(_options))
+            {
+                context.Movie.RemoveRange(context.Movie);
+                context.SaveChanges();
+            }
+        }
+
+        public void Dispose()
+        {
+            // Clean up the database after each test
+            ClearDatabase();
         }
     }
 }

@@ -13,10 +13,12 @@ namespace RazorPagesMovie.Pages.Movies
     public class DetailsModel : PageModel
     {
         private readonly RazorPagesMovie.Data.RazorPagesMovieContext _context;
+        private readonly ILogger<DetailsModel> _logger;
 
-        public DetailsModel(RazorPagesMovie.Data.RazorPagesMovieContext context)
+        public DetailsModel(RazorPagesMovie.Data.RazorPagesMovieContext context, ILogger<DetailsModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public Movie Movie { get; set; } = default!;

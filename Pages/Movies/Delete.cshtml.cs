@@ -26,14 +26,16 @@ namespace RazorPagesMovie.Pages.Movies
         {
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Invalid movie ID.";
+                return RedirectToPage("./Index");
             }
 
             var movie = await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
 
             if (movie == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "The movie you are trying to delete does not exist.";
+                return RedirectToPage("./Index");
             }
             else
             {
@@ -46,17 +48,32 @@ namespace RazorPagesMovie.Pages.Movies
         {
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Invalid movie ID.";
+                return RedirectToPage("./Index");
             }
 
             var movie = await _context.Movie.FindAsync(id);
-            if (movie != null)
+            if (movie == null)
             {
-                Movie = movie;
-                _context.Movie.Remove(Movie);
-                await _context.SaveChangesAsync();
+                // Movie has already been deleted by another user
+                TempData["ErrorMessage"] = "The movie you are trying to delete has already been deleted.";
+                return RedirectToPage("./Index");
             }
 
+            Movie = movie;
+            _context.Movie.Remove(Movie);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Handle concurrency exception
+                TempData["ErrorMessage"] = "The movie you are trying to delete has already been deleted by another user.";
+                return RedirectToPage("./Index");
+            }
+
+            TempData["SuccessMessage"] = "Movie deleted successfully.";
             return RedirectToPage("./Index");
         }
     }
