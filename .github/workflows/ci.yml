@@ -161,6 +161,24 @@ jobs:
         if-no-files-found: warn
         compression-level: 6
 
+  publish-test-results:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v2
+        with:
+          name: testresults-${{ github.run_id }}-split-*
+          path: test_results
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1.8.0
+        if: success() || failure()
+        with:
+          reporter: dotnet-trx
+          name: xUnit Test Results
+          path: test_results/**/*.trx
+
   runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
     runs-on: ubuntu-latest
     name: Generate runner indexes
