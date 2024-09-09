@@ -83,8 +83,12 @@ jobs:
     - name: Build App project
       run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
+    - name: Set runtime
+      id: set-runtime
+      run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
+
     - name: Publish
-      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}
+      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ env.RUNTIME }}
 
     - name: Upload published app
       uses: actions/upload-artifact@v4.3.6
@@ -150,10 +154,15 @@ jobs:
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
     
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
-    - run: dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" --logger "console;verbosity=detailed" --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" --results-directory ./testresults
+    - run: |
+        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj \
+          --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" \
+          --logger "console;verbosity=detailed" \
+          --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" \
+          --results-directory ./testresults
     
     - name: Upload test results
-      if : always()
+      if: always()
       uses: actions/upload-artifact@v4.3.6
       with:
         name: testresults-${{ github.run_id }}-split-${{ matrix.index }}
@@ -179,7 +188,7 @@ jobs:
       run: |
         mkdir -p test_results
         for url in $(jq -r '.artifacts[] | select(.name | startswith("testresults-")) | .archive_download_url' artifacts.json); do
-            artifact_name=$(basename $url)
+            artifact_name=$(echo $url | awk -F/ '{print $NF}' | awk -F? '{print $1}')
             curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} -L -o test_results/testresults.zip $url
             unzip -o test_results/testresults.zip -d test_results
             rm test_results/testresults.zip
@@ -187,7 +196,7 @@ jobs:
 
     - name: Publish Test Results
       uses: dorny/test-reporter@v1.8.0
-      if: success() || failure()
+      if: always()
       with:
         reporter: dotnet-trx
         name: xUnit Test Results
