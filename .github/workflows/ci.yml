@@ -168,7 +168,7 @@ jobs:
       - name: Download test results
         uses: actions/download-artifact@v2
         with:
-          name: testresults-${{ github.run_id }}-split-*
+          name: 'testresults-${{ github.run_id }}-split-*'
           path: test_results
 
       - name: Publish Test Results
