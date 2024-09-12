@@ -93,8 +93,8 @@ jobs:
     - name: Upload published app
       uses: actions/upload-artifact@v4.3.6
       with:
-        name: RazorPagesMovie-ubuntu-latest
-        path: ./publish
+        name: razor-linux-arm64
+        path: publish/
 
   test:
     runs-on: ${{ matrix.os }}
@@ -219,8 +219,8 @@ jobs:
         uses: actions/checkout@v3
       - uses: actions/download-artifact@v3 # download the published app artifact from the build job
         with:
-          name: RazorPagesMovie-ubuntu-latest
-          path: ./publish
+          name: razor-linux-arm64
+          path: publish/
 
       # build the docker image using the Dockerfile in the root of the repository 
       # and tag it with the current run number from the github action workflow run
