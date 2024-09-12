@@ -91,7 +91,7 @@ jobs:
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ env.RUNTIME }}
 
     - name: Upload published app
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v3
       with:
         name: razor-linux-arm64
         path: publish/
@@ -217,7 +217,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3 # download the published app artifact from the build job
+      - uses: actions/download-artifact@v1 # download the published app artifact from the build job
         with:
           name: razor-linux-arm64
           path: publish/
