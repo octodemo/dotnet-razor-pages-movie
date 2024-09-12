@@ -206,7 +206,7 @@ jobs:
     runs-on: ubuntu-latest # using the latest ubuntu runner
     outputs:
       image_tag: ghcr.io/${{ github.repository }}:${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
-    needs: [test]
+    needs: [build, test] # depend on the build job to get the published app artifact
     if: github.ref == 'refs/heads/main' # run this job only when the branch is main branch and not on pull requests or other branches - https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#github-context
     # permissions for write acces to the packages and id-token and push access to the repository to create the container registry token
     permissions:
