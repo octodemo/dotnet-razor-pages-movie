@@ -93,7 +93,7 @@ jobs:
     - name: Upload published app
       uses: actions/upload-artifact@v4.3.6
       with:
-        name: RazorPagesMovie-${{ matrix.os }}
+        name: RazorPagesMovie-ubuntu-latest
         path: ./publish
 
   test:
