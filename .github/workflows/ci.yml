@@ -217,7 +217,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: actions/download-artifact@v1 # download the published app artifact from the build job
+      - uses: actions/download-artifact@v3 # download the published app artifact from the build job
         with:
           name: razor-linux-arm64
           path: publish/
