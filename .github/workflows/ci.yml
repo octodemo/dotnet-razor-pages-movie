@@ -85,7 +85,7 @@ jobs:
 
     - name: Set runtime
       id: set-runtime
-      run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-arm64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
+      run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
 
     - name: Publish
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ env.RUNTIME }}
