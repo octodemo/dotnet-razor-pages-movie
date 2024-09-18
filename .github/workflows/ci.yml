@@ -11,10 +11,10 @@ on:
         required: false
         default: false
       debug_deployment:
-        type: boolean
+        type: string
         description: 'Run the pipeline with debug deployment enabled'
         required: false
-        default: false
+        default: 'false'
 
   # runnnig on push to main and develop branches
   push:
@@ -205,7 +205,7 @@ jobs:
   build-and-publish-docker-image: # job to build the docker image and publish it to the GitHub Container Registry
     runs-on: ubuntu-latest # using the latest ubuntu runner
     outputs:
-      image_tag: ghcr.io/${{ github.repository }}:${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
+      image_tag: ${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
     needs: [build, test] # depend on the build job to get the published app artifact
     if: github.ref == 'refs/heads/main' # run this job only when the branch is main branch and not on pull requests or other branches - https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#github-context
     # permissions for write acces to the packages and id-token and push access to the repository to create the container registry token
@@ -243,6 +243,15 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:latest # use the docker layer caching to speed up the docker image build process
           cache-to: type=inline
 
+  deploy:
+    needs: [build-and-publish-docker-image] # this job needs build-and-publish-docker-image job as a requirement to run
+    uses: ./.github/workflows/cd.yml
+    with:
+      # with tag from the build-and-publish-docker-image job in the output_tags step
+      image_tag: "${{ needs.build-and-publish-docker-image.outputs.image_tag }}"
+      debug: "${{ github.event.inputs.debug_deployment }}"
+    secrets: inherit
+  
   runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
     runs-on: ubuntu-latest
     name: Generate runner indexes

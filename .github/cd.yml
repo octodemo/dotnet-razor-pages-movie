@@ -1,0 +1,78 @@
+name: CD
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        required: true
+        type: string
+
+  workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
+      debug:
+        required: false
+        type: string
+        default: 'false'
+env:
+  RESOURCE_GROUP: "tsvi-rg"
+  VM_NAME: "tsvi-vm"
+
+jobs:
+  staging-end2end-tests:
+    permissions:
+      actions: read
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+    
+    runs-on: ubuntu-latest
+    environment: STAGE
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Deploy to Kubernetes [STAGING ENVIRONMENT]
+        run: |
+          echo "kubectl apply -f deployments/"
+      
+      - name: UAT TESTS [STAGING ENVIRONMENT]
+        run: |
+          echo "running UAT tests with version tag: ${{ inputs.image_tag }}"
+
+      - name: SMOKE TESTS [STAGING ENVIRONMENT]
+        run: |
+          echo "running SMOKE tests with version tag: ${{ inputs.image_tag }}"
+
+      - name: PERFORMANCE TESTS [STAGING ENVIRONMENT]
+        run: |
+          echo "running PERFORMANCE tests with version tag: ${{ inputs.image_tag }}"
+  
+  production:
+    permissions:
+      actions: read
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+    
+    runs-on: ubuntu-latest
+    environment: PROD
+    needs: [staging-end2end-tests]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: 'Az CLI Login via OIDC'
+        uses: azure/login@v1.4.6
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure App [PRODUCTION ENVIRONMENT]
+        run: az vm run-command invoke --resource-group $RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts "/home/azureuser/dotnet-razor-pages-movie/build_run_in_container.sh IMAGE_TAG=${{ inputs.image_tag }} VERBOSE=${{ inputs.debug }}"
+        
