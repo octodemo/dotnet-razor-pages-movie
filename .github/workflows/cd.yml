@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
+        description: "The tag of the Docker image to deploy"
         required: true
         type: string
 
@@ -60,7 +61,9 @@ jobs:
       contents: read  # This is required for actions/checkout
     
     runs-on: ubuntu-latest
-    environment: PROD
+    environment: 
+      name: PROD
+      url: http://tsvi.eastus.cloudapp.azure.com
     needs: [staging-end2end-tests]
     steps:
       - name: Checkout repository
