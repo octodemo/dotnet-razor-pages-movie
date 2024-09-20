@@ -26,12 +26,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles(); // Add this line
 app.UseRouting();
-
 app.UseAuthorization();
 
-// app.MapStaticAssets();
 app.MapRazorPages();
 
 app.Run();
@@ -62,12 +60,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles(); // Add this line
 app.UseRouting();
-
 app.UseAuthorization();
 
-app.MapStaticAssets();
 app.MapRazorPages();
 
 app.Run();
