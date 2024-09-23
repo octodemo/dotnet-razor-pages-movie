@@ -4,12 +4,12 @@ WORKDIR /app
 # Install locales package and generate en_US.UTF-8 locale
 RUN apt-get update && apt-get install -y locales \
     && locale-gen en_US.UTF-8 \
-    && update-locale LANG=en_US.UTF-8
+    && locale-gen LANG=en_US.UTF-8
 
 # Set environment variables for locale
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Copy all files in the publish directory
 COPY ./publish .
