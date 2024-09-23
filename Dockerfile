@@ -14,6 +14,9 @@ ENV LC_ALL=en_US.UTF-8
 # Copy all files in the publish directory
 COPY ./publish .
 
+# Run chmod to make the app executable
+RUN chmod +x /app/RazorPagesMovie
+
 # Expose the ports the app runs on
 EXPOSE 80
 EXPOSE 1433
