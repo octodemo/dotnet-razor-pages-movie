@@ -77,5 +77,5 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure App [PRODUCTION ENVIRONMENT]
-        run: az vm run-command invoke --resource-group $RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts "/home/azureuser/dotnet-razor-pages-movie/build_run_in_container.sh IMAGE_TAG=${{ inputs.image_tag }} VERBOSE=${{ inputs.debug }}"
+        run: az vm run-command invoke --resource-group $RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts "sudo /home/azureuser/dotnet-razor-pages-movie/build_run_in_container.sh IMAGE_TAG=${{ inputs.image_tag }} VERBOSE=${{ inputs.debug }}"
         
