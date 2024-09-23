@@ -1,4 +1,13 @@
-body { background: linear-gradient(135deg, #f0f8ff, #e6e6fa); } /* Light pastel gradient */
+body {
+  background: linear-gradient(135deg, #f0f8ff, #e6e6fa);
+  animation: gradient-animation 10s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
 :root {
   --primary-color: #007bff;
@@ -7,6 +16,7 @@ body { background: linear-gradient(135deg, #f0f8ff, #e6e6fa); } /* Light pastel 
   --text-color: #333;
   --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   --border-radius: 10px;
+  --glow-color: rgba(255, 255, 255, 0.6);
 }
 
 .movies-container {
@@ -15,72 +25,151 @@ body { background: linear-gradient(135deg, #f0f8ff, #e6e6fa); } /* Light pastel 
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   margin-top: 20px;
+  animation: fade-in 1s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
 }
 
 .movie-card {
-  border: 1px solid #ddd;
+  perspective: 1000px;
+  width: calc(25% - 20px); /* Adjust width to fit three cards per row with gap */
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.movie-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  min-height: 250px; /* Ensure consistent height */
+}
+
+.movie-card.flipped .movie-card-inner {
+  transform: rotateY(180deg);
+}
+
+.movie-card-front, .movie-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.movie-card-front {
   background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
   color: var(--text-color);
 }
 
-.movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+.movie-card-back {
+  background: #fff;
+  color: var(--text-color);
+  transform: rotateY(180deg);
 }
 
-.movie-card .card-body {
-  padding: 15px;
+/* Scroll indicator */
+#scrollIndicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 5px;
+  background: #007bff;
+  z-index: 1000;
 }
 
-.movie-card .card-title {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: #ff6b6b;
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #ff0;
+  opacity: 0.8;
+  animation: fall linear infinite;
 }
 
-.movie-card .card-text {
-  margin-bottom: 10px;
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
 }
 
-.movie-actions .btn {
-  margin-right: 5px;
-  transition: background-color 0.2s, color 0.2s;
+/* Hover effects */
+.hover-effect.hovered {
+  transform: scale(1.1);
+  transition: transform 0.3s;
 }
 
-.movie-actions .btn:hover {
-  background-color: var(--primary-color);
+/* Back-to-top button */
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: none;
+  background: var(--primary-color);
   color: #fff;
-}
-
-.form-inline {
-  display: flex;
-  flex-wrap: wrap;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
 }
 
-.form-inline .form-group {
-  margin-right: 10px;
+.back-to-top.show {
+  display: flex;
 }
 
-.form-inline .form-control {
-  width: auto;
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
 }
 
-@media (max-width: 576px) {
-  .form-inline {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
 
-  .form-inline .form-group {
-    margin-bottom: 10px;
-  }
+.modal .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
 
-  .form-inline .form-control {
-    width: 100%;
-  }
+.modal .close:hover,
+.modal .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }

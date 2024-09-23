@@ -1,15 +1,15 @@
-﻿// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    document.querySelector(this.getAttribute('href')).scrollIntoView({
-      behavior: 'smooth'
+﻿document.addEventListener('DOMContentLoaded', () => {
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
     });
   });
-});
 
-// Add a fade-in effect to the body
-document.addEventListener('DOMContentLoaded', () => {
+  // Add a fade-in effect to the body
   document.body.style.opacity = 0;
   setTimeout(() => {
     document.body.style.transition = 'opacity 1s';
@@ -26,9 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const rect = this.getBoundingClientRect();
       tooltip.style.left = `${rect.left + window.scrollX}px`;
       tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight}px`;
+      setTimeout(() => tooltip.style.opacity = 1, 0); // Fade-in effect
     });
     elem.addEventListener('mouseleave', function () {
-      document.querySelector('.tooltip').remove();
+      const tooltip = document.querySelector('.tooltip');
+      tooltip.style.opacity = 0;
+      setTimeout(() => tooltip.remove(), 300); // Wait for fade-out
     });
   });
 
@@ -41,7 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   window.addEventListener('scroll', () => {
-    backToTop.style.display = window.scrollY > 200 ? 'block' : 'none';
+    if (window.scrollY > 200) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
   });
 
   // Add modal popup with less intrusive behavior
@@ -65,6 +72,24 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('click', (e) => {
       if (e.target === modal) closeModal();
     });
-    setTimeout(() => modal.style.display = 'block', 5000); // Show after 5 seconds
+    setTimeout(() => modal.style.display = 'flex', 5000); // Show after 5 seconds
   }
+
+  // Add scroll progress bar
+  const scrollProgress = document.createElement('div');
+  scrollProgress.id = 'scrollProgress';
+  document.body.appendChild(scrollProgress);
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = `${scrollPercent}%`;
+  });
+
+  // Add flip effect to movie cards
+  document.querySelectorAll('.movie-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+  });
 });
