@@ -76,7 +76,7 @@ jobs:
           startup-project-path: .
           dotnet-ef-version: 6.0.14
           context: RazorPagesMovieContext
-          connection: ${{ secrets.DB_URL }}
+          connection: "${{ secrets.DB_URL }}"
 
       - name: 'Az CLI Login via OIDC'
         uses: azure/login@v1.4.6
