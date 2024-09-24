@@ -69,14 +69,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Configure .NET SDK and install dotnet-ef. Then run database migrations.
-        uses: warrenbrasil/dotnet-migrations@v3
-        with:
-          project-path: .
-          startup-project-path: .
-          dotnet-ef-version: 6.0.14
-          context: RazorPagesMovieContext
-          connection: "${{ secrets.DB_URL }}"
+      - name: Install dotnet-ef.
+        run: | 
+          dotnet tool install --global dotnet-ef --version 6.0.14
+          dotnet-ef database update --connection ${{ secrets.DB_URL }}
 
       - name: 'Az CLI Login via OIDC'
         uses: azure/login@v1.4.6
