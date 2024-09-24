@@ -72,7 +72,7 @@ jobs:
       - name: Install dotnet-ef.
         run: | 
           dotnet tool install --global dotnet-ef --version 6.0.14
-          dotnet-ef database update --connection ${{ secrets.DB_URL }}
+          dotnet-ef database update --connection "${{ secrets.DB_URL }}"
 
       - name: 'Az CLI Login via OIDC'
         uses: azure/login@v1.4.6
