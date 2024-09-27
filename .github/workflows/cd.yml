@@ -78,4 +78,11 @@ jobs:
 
       - name: Deploy the Azure App - Including DB Migrations [PRODUCTION ENVIRONMENT]
         run: az vm run-command invoke --resource-group $RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts "
-          docker ps -q -f name=razorpagesmovie && sudo docker stop razorpagesmovie && sudo docker rm razorpagesmovie; sudo docker run -d -p 80:5000 --name razorpagesmovie -e ASPNETCORE_URLS='${{ secrets.ASPNETCORE_URLS }}' -e ConnectionStrings__RazorPagesMovieContext='${{ secrets.DB_URL }}' ghcr.io/octodemo/dotnet-razor-pages-movie:${{ inputs.image_tag }}; docker logs -f razorpagesmovie"
+              export SA_PASSWORD='${{ secrets.SA_PASSWORD }}'
+              export ConnectionStrings__RazorPagesMovieContext='${{ secrets.DB_URL }}'
+              export ASPNETCORE_URLS='${{ secrets.ASPNETCORE_URLS }}'
+              export TAG='${{ inputs.image_tag }}'
+              
+              docker compose pull webapp
+              docker compose up -d --no-deps --build webapp
+          "

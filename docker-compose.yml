@@ -1,17 +1,21 @@
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver_dckr_cmps
     environment:
-      SA_PASSWORD: "YourStrong!Passw0rd"
+      SA_PASSWORD: "${SA_PASSWORD}"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
 
   webapp:
-    build: .
+    image: ghcr.io/octodemo/dotnet-razor-pages-movie:${TAG}
+    container_name: razorpagesmovie_dckr_cmps
     ports:
-      - "5000:80"
+      - "80:5000"
     depends_on:
       - sqlserver
     environment:
-      ConnectionStrings__RazorPagesMovieContext: "Server=sqlserver,1433;Database=RazorPagesMovieContext;User ID=sa;Password=YourStrong!Passw0rd;"
+      ConnectionStrings__RazorPagesMovieContext: "${ConnectionStrings__RazorPagesMovieContext}"
+      ASPNETCORE_URLS: "${ASPNETCORE_URLS}"
+    restart: unless-stopped
