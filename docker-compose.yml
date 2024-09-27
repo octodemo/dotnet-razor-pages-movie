@@ -1,0 +1,17 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  webapp:
+    build: .
+    ports:
+      - "5000:80"
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings__RazorPagesMovieContext: "Server=sqlserver,1433;Database=RazorPagesMovieContext;User ID=sa;Password=YourStrong!Passw0rd;"
