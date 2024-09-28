@@ -82,7 +82,5 @@ jobs:
           export ConnectionStrings__RazorPagesMovieContext='${{ secrets.DB_URL }}'
           export ASPNETCORE_URLS='${{ secrets.ASPNETCORE_URLS }}'
           export TAG='${{ inputs.image_tag }}'
-            
           docker compose pull webapp
-          docker compose up -d --no-deps --build webapp
-          "
+          docker compose up -d --no-deps --build webapp"
