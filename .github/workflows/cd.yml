@@ -44,7 +44,7 @@ jobs:
 
       - name: Deploy the Azure App - Including DB Migrations [STAGING ENVIRONMENT]
         run: |
-          REVISION_SUFFIX=$(echo "staging-$(date +%s)" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')
+          REVISION_SUFFIX=${{ github.run_id }}-${{ inputs.image_tag }}
           echo "REVISION_SUFFIX=$REVISION_SUFFIX" >> $GITHUB_ENV
           az containerapp create \
             --name tsvi-demo-movie-staging \
