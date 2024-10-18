@@ -24,6 +24,7 @@ on:
 env:
   RESOURCE_GROUP: "tsvi-rg"
   VM_NAME: "tsvi-vm"
+  CONTAINER_REGISTRY: "ghcr.io/octodemo/dotnet-razor-pages-movie"
 
 jobs:
   staging-end2end-tests:
@@ -49,7 +50,7 @@ jobs:
           az containerapp create \
             --name tsvi-demo-movie-staging \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ inputs.image_tag }} \
+            --image ${{ env.CONTAINER_REGISTRY }}:${{ inputs.image_tag }} \
             --environment ${{ vars.CONTAINER_APP_ENVIRONMENT }} \
             --target-port 80 \
             --ingress 'external' \
