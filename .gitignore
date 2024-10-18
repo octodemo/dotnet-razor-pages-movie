@@ -8,7 +8,7 @@
 **/TestResults/*
 
 # Ignore local shell scripts
-build*.sh
+*.sh
 
 # User-specific files
 *.rsuser

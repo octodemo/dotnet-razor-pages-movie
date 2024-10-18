@@ -35,25 +35,30 @@ jobs:
     runs-on: ubuntu-latest
     environment: STAGE
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      
-      - name: Deploy to Kubernetes [STAGING ENVIRONMENT]
-        run: |
-          echo "kubectl apply -f deployments/"
-      
-      - name: UAT TESTS [STAGING ENVIRONMENT]
-        run: |
-          echo "running UAT tests with version tag: ${{ inputs.image_tag }}"
+      - name: 'Az CLI Login via OIDC'
+        uses: azure/login@v1.4.6
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: SMOKE TESTS [STAGING ENVIRONMENT]
+      - name: Deploy the Azure App - Including DB Migrations [STAGING ENVIRONMENT]
         run: |
-          echo "running SMOKE tests with version tag: ${{ inputs.image_tag }}"
+          REVISION_SUFFIX=$(echo "${{ github.sha }}-staging" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-')
+          echo "REVISION_SUFFIX=$REVISION_SUFFIX" >> $GITHUB_ENV
+          az containerapp create \
+            --name tsvi-demo-movie-staging \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ inputs.image_tag }} \
+            --environment ${{ env.CONTAINER_APP_ENVIRONMENT }} \
+            --target-port 80 \
+            --ingress 'external' \
+            --cpu 0.5 \
+            --memory 1.0Gi \
+            --revision-suffix $REVISION_SUFFIX \
+            --env-vars ConnectionStrings__RazorPagesMovieContext='${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT}}'
 
-      - name: PERFORMANCE TESTS [STAGING ENVIRONMENT]
-        run: |
-          echo "running PERFORMANCE tests with version tag: ${{ inputs.image_tag }}"
-  
+
   production:
     permissions:
       actions: read
@@ -75,12 +80,4 @@ jobs:
 
       - name: Deploy the Azure App - Including DB Migrations [PRODUCTION ENVIRONMENT]
         run: |
-          az vm run-command invoke --resource-group $RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts "
-            export SA_PASSWORD='${{ secrets.SA_PASSWORD }}'
-            export ConnectionStrings__RazorPagesMovieContext='${{ secrets.DB_URL }}'
-            export ASPNETCORE_URLS='${{ secrets.ASPNETCORE_URLS }}'
-            export TAG='${{ inputs.image_tag }}'
-            cd /home/azureuser
-            docker compose pull webapp || { echo 'Failed to pull the image' ; exit 1; }
-            docker compose up -d --no-deps --build webapp || { echo 'Failed to start the container' ; exit 1; }
-          "
+          echo "Deploying the Azure App - Including DB Migrations [PRODUCTION ENVIRONMENT]"
