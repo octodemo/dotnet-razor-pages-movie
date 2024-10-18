@@ -50,7 +50,7 @@ jobs:
             --name tsvi-demo-movie-staging \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --image ${{ inputs.image_tag }} \
-            --environment ${{ env.CONTAINER_APP_ENVIRONMENT }} \
+            --environment ${{ vars.CONTAINER_APP_ENVIRONMENT }} \
             --target-port 80 \
             --ingress 'external' \
             --cpu 0.5 \
