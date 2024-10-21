@@ -57,3 +57,9 @@ publish/
 *.swp
 *.swo
 *.DS_Store
+
+# Exclude Terraform state files and directories
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl

@@ -23,7 +23,6 @@ on:
         default: 'false'
 env:
   RESOURCE_GROUP: "tsvi-rg"
-  VM_NAME: "tsvi-vm"
   CONTAINER_REGISTRY: "ghcr.io/octodemo/dotnet-razor-pages-movie"
 
 jobs:
@@ -36,6 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: STAGE
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+        
       - name: 'Az CLI Login via OIDC'
         uses: azure/login@v1.4.6
         with:
@@ -44,21 +46,22 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy the Azure App - Including DB Migrations [STAGING ENVIRONMENT]
-        run: |
-          REVISION_SUFFIX=${{ github.run_id }}-${{ inputs.image_tag }}
-          echo "REVISION_SUFFIX=$REVISION_SUFFIX" >> $GITHUB_ENV
-          az containerapp create \
-            --name tsvi-demo-movie-staging \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ env.CONTAINER_REGISTRY }}:${{ inputs.image_tag }} \
-            --environment ${{ vars.CONTAINER_APP_ENVIRONMENT }} \
-            --target-port 80 \
-            --ingress 'external' \
-            --cpu 0.5 \
-            --memory 1.0Gi \
-            --revision-suffix $REVISION_SUFFIX \
-            --env-vars ConnectionStrings__RazorPagesMovieContext='${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT}}'
+        uses: hashicorp/setup-terraform@v3.1.2
+      
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform/staging
 
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform/staging
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ github.event.inputs.image_tag }}'
+        working-directory: ./terraform/staging
+
+      - run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform/staging
 
   production:
     permissions:
