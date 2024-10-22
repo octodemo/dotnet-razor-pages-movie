@@ -76,7 +76,7 @@ jobs:
 
       # Open an issue and notify QA that the staging environment is ready for testing
       - name: Create Issue
-        uses: peter-evans/create-issue-from-file@v2
+        uses: peter-evans/create-issue-from-file@v5.0.1
         with:
           title: Staging Environment Ready for Testing
           labels: staging,ready-for-testing,UAT
