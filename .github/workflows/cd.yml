@@ -74,6 +74,7 @@ jobs:
         id: generate_artifact_url
         run: |
           ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state") | .id')
+          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
           echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
 
       # Open an issue and notify QA that the staging environment is ready for testing
