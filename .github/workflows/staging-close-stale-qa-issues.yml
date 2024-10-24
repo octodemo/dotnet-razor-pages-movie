@@ -8,7 +8,7 @@ on:
 permissions:
   issues: write
   contents: read
-  actions: read
+  actions: write
 
 jobs:
   close-stale-issues:
@@ -39,5 +39,3 @@ jobs:
               state: 'closed'
             });
           }
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
