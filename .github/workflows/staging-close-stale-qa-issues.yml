@@ -23,7 +23,11 @@ jobs:
         gh issue list --label "staging" --state open --json number,labels | jq -c '.[]' | while read -r issue; do
           issue_number=$(echo "$issue" | jq -r '.number')
           echo "Closing issue #$issue_number"
-          gh issue close "$issue_number" --comment "This issue has been automatically closed due to inactivity."
+          curl -X PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/issues/$issue_number \
+            -d '{"state":"closed"}'
         done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
