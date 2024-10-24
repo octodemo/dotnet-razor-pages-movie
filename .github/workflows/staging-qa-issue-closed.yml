@@ -3,8 +3,6 @@ name: Build on Issue Closed
 on:
   issues:
     types: [closed]
-  workflow_dispatch:
-
 
 permissions:
   actions: read

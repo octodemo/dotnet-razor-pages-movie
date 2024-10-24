@@ -37,7 +37,5 @@ jobs:
               state: 'closed'
             });
           }
-
-    - name: Trigger staging-qa-issue-closed workflow to deprovision staging environment
-      run: |
-        curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/workflows/staging-qa-issue-closed.yml/dispatches -d '{"ref":"refs/heads/main"}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
