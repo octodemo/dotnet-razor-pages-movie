@@ -21,7 +21,7 @@ jobs:
       run: |
         echo "Checking for stale issues..."
         now=$(date +%s)
-        gh issue list --label "staging" --state open --json number,createdAt | jq -c '.[]' | while read -r issue; do
+        gh issue list --label "staging" --state open --json number,createdAt,labels | jq -c '.[]' | while read -r issue; do
           created_at=$(echo "$issue" | jq -r '.createdAt')
           issue_number=$(echo "$issue" | jq -r '.number')
           created_at_seconds=$(date -d "$created_at" +%s)
