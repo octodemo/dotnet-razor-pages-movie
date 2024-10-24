@@ -29,6 +29,7 @@ jobs:
           });
 
           for (const issue of issues.data) {
+            console.log(`Closing issue #${issue.number}`);
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
