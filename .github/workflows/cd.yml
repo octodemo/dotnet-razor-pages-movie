@@ -65,7 +65,7 @@ jobs:
         working-directory: ./terraform/staging
 
       - name: Upload Teraaform State and files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: terraform-state
           path: ./terraform/staging/
