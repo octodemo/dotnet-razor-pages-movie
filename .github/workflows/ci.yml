@@ -24,6 +24,9 @@ on:
     paths-ignore:
       - '**/README.md'
       - '.devcontainer/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/workflows/staging-qa-issue-closed.yml'
+
   # running on pull requests to main and develop branches
   pull_request:
     branches:
