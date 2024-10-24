@@ -79,7 +79,7 @@ jobs:
 
       # Open an issue and notify QA that the staging environment is ready for testing
       - name: Create Issue
-        uses: actions/github-script@v3
+        uses: actions/github-script@v7.0.1
         with:
           script: |
             const issueTemplate = `
