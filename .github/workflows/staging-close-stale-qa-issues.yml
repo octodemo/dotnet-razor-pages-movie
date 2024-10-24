@@ -27,9 +27,9 @@ jobs:
             echo "Closing issue #$issue_number"
             curl -X PATCH \
               -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+              -H "Authorization: token ${{ env.PAT_TOKEN }}" \
               -d "{\"state\": \"closed\"}" \
               "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number"
         done
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
