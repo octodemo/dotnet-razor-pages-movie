@@ -21,7 +21,7 @@ jobs:
 
     - name: Close all issues with the PAT_TOKEN
       run: |
-        echo "Closing all issues with the PAT_TOKEN
+        echo "Closing all issues with the PAT_TOKEN"
         gh issue list --label "staging" --state open --json number,labels | jq -c '.[]' | while read -r issue; do
             issue_number=$(echo "$issue" | jq -r '.number')
             echo "Closing issue #$issue_number"
