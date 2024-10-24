@@ -1,4 +1,4 @@
-name: Close Stale Issues
+name: Close stale qa issues with label "staging"
 
 on:
   schedule:
@@ -17,19 +17,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4.1.7
     
-    - name: Close stale issues
+    - name: Close stale issues with label "staging"
       run: |
         echo "Checking for stale issues..."
-        now=$(date +%s)
-        gh issue list --label "staging" --state open --json number,createdAt,labels | jq -c '.[]' | while read -r issue; do
-          created_at=$(echo "$issue" | jq -r '.createdAt')
+        gh issue list --label "staging" --state open --json number,labels | jq -c '.[]' | while read -r issue; do
           issue_number=$(echo "$issue" | jq -r '.number')
-          created_at_seconds=$(date -d "$created_at" +%s)
-          age=$(( (now - created_at_seconds) / 86400 ))
-          if [ "$age" -gt 7 ]; then
-            echo "Closing issue #$issue_number"
-            gh issue close "$issue_number" --comment "This issue has been automatically closed due to inactivity."
-          fi
+          echo "Closing issue #$issue_number"
+          gh issue close "$issue_number" --comment "This issue has been automatically closed due to inactivity."
         done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
