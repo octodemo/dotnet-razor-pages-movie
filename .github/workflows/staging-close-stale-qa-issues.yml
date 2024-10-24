@@ -33,4 +33,3 @@ jobs:
         done
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
