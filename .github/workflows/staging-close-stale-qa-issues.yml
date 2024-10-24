@@ -8,6 +8,7 @@ on:
 permissions:
   issues: write
   contents: read
+  actions: read
 
 jobs:
   close-stale-issues:
