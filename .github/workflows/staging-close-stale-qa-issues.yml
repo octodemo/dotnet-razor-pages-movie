@@ -12,6 +12,7 @@ permissions:
 jobs:
   close-stale-issues:
     runs-on: ubuntu-latest
+    environment: STAGE
 
     steps:
     - name: Checkout repository
