@@ -37,3 +37,13 @@ jobs:
               state: 'closed'
             });
           }
+
+    - name: Trigger staging-qa-issue-closed workflow
+      uses: actions/github-script@v7.0.1
+      with:
+        script: |
+          await github.repos.createDispatchEvent({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            event_type: 'staging-qa-issue-closed'
+          });
