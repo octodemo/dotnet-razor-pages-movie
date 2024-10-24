@@ -1,0 +1,29 @@
+name: Close Stale Issues
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  close-stale-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Close stale issues
+      run: |
+        echo "Checking for stale issues..."
+        issues=$(gh issue list --label "staging" --state open --json number,createdAt --jq '.[] | select((now - fromdateiso8601(.createdAt)) > 86400 * 7) | .number')
+        for issue in $issues; do
+          echo "Closing issue #$issue"
+          gh issue close $issue --comment "This issue has been automatically closed due to inactivity."
+        done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
