@@ -99,7 +99,7 @@ jobs:
             - Terraform IaC files - Artifact URL: ${process.env.ARTIFACT_URL}
             `;
             
-            github.issues.create({
+            github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: "Staging Environment Ready for Testing",
