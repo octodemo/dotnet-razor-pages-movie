@@ -16,17 +16,20 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.7
-
-    - name: Install jq
-      run: sudo apt-get install -y jq
     
     - name: Close stale issues
       run: |
         echo "Checking for stale issues..."
-        issues=$(gh issue list --label "staging" --state open --json number,createdAt --jq '.[] | select((now - (strptime("%Y-%m-%dT%H:%M:%SZ"; .createdAt) | mktime)) > 86400 * 7) | .number')
-        for issue in $issues; do
-          echo "Closing issue #$issue"
-          gh issue close $issue --comment "This issue has been automatically closed due to inactivity."
+        now=$(date +%s)
+        gh issue list --label "staging" --state open --json number,createdAt | jq -c '.[]' | while read -r issue; do
+          created_at=$(echo "$issue" | jq -r '.createdAt')
+          issue_number=$(echo "$issue" | jq -r '.number')
+          created_at_seconds=$(date -d "$created_at" +%s)
+          age=$(( (now - created_at_seconds) / 86400 ))
+          if [ "$age" -gt 7 ]; then
+            echo "Closing issue #$issue_number"
+            gh issue close "$issue_number" --comment "This issue has been automatically closed due to inactivity."
+          fi
         done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
