@@ -146,8 +146,3 @@ jobs:
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
         working-directory: ./terraform/production
-
-      - name: Capture Terraform Outputs
-        id: capture_outputs
-        run: |
-          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
