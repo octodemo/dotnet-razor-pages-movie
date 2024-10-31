@@ -130,12 +130,24 @@ jobs:
         uses: actions/checkout@v4.1.7
 
       - name: 'Az CLI Login via OIDC'
-        uses: azure/login@v1.4.6
+        uses: azure/login@v2.2.0
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy the Azure App - Including DB Migrations [PRODUCTION ENVIRONMENT]
+        uses: hashicorp/setup-terraform@v3.1.2
+      
+      - name: Terraform Commands
         run: |
-          echo "Deploying the Azure App - Including DB Migrations [PRODUCTION ENVIRONMENT]"
+          terraform init
+          terraform validate
+          terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
+          terraform apply -auto-approve tfplan
+        working-directory: ./terraform/production
+
+      - name: Capture Terraform Outputs
+        id: capture_outputs
+        run: |
+          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
