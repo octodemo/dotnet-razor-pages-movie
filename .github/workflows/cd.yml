@@ -57,6 +57,11 @@ jobs:
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
         working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
 
       - name: Capture Terraform Outputs
         id: capture_outputs
@@ -146,6 +151,11 @@ jobs:
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
         working-directory: ./terraform/production
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
       
       - name: Upload Teraaform State and files
         uses: actions/upload-artifact@v4.4.3

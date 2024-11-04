@@ -1,12 +1,3 @@
-terraform {
-  backend "azurerm" {
-    resource_group_name  =  "tsvi-rg"
-    storage_account_name = "razorpagesmoviestorage"
-    container_name       = "tfstateprod"
-    key                  = "terraform.tfstate"
-  }
-}
-
 resource "azurerm_mssql_database" "production" {
   name      = "RazorPagesMovieContext"
   server_id = var.sql_server_id
