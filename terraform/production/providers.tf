@@ -9,8 +9,8 @@ terraform {
   }
   backend "azurerm" {
     resource_group_name  = "tsvi-rg"
-    storage_account_name = "razorpagesmovieprod"
-    container_name       = "tfstatestage"
+    storage_account_name = "razorpagesmoviestorage"
+    container_name       = "tfstateprod"
     key                  = "terraform.tfstate"
   }
 }
