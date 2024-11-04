@@ -13,6 +13,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "location" {
+  description = "The location of the resource group."
+  type        = string
+}
+
 variable "container_app_environment" {
   description = "The ID of the container app environment"
   type        = string

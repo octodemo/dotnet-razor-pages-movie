@@ -8,3 +8,4 @@ container_app_environment = "/subscriptions/f0be368c-6f60-4a3d-bcdc-049da77355a3
 sql_server_name = "tsvi-db"
 sql_server_id = "/subscriptions/f0be368c-6f60-4a3d-bcdc-049da77355a3/resourceGroups/tsvi-rg/providers/Microsoft.Sql/servers/tsvi-db"
 sql_admin_username = "tsvi"
+location                   = "East US"

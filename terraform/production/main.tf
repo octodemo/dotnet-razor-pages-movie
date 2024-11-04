@@ -1,3 +1,12 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  =  "tsvi-rg"
+    storage_account_name = "razorpagesmoviestorage"
+    container_name       = "tfstateprod"
+    key                  = "terraform.tfstate"
+  }
+}
+
 resource "azurerm_mssql_database" "production" {
   name      = "RazorPagesMovieContext"
   server_id = var.sql_server_id
@@ -28,7 +37,7 @@ resource "azurerm_container_app" "production" {
       name   = var.container_app_name
       image  = "${var.container_registry}:${var.image_tag}"
       cpu    = 0.5
-      memory = "1.0Gi"
+      memory = "1Gi"
 
       env {
         name  = "ConnectionStrings__RazorPagesMovieContext"

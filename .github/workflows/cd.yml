@@ -93,8 +93,8 @@ jobs:
             - [ ] The staging environment is using the correct database schema
             
             Additional Information:
-            - Image Tag: ${process.env.IMAGE_TAG}
-            - Server URL: ${process.env.CONTAINER_APP_URL}
+            - Image Tag: https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie tag: ${process.env.IMAGE_TAG}
+            - App Server URL: https://${process.env.CONTAINER_APP_URL}
             - Terraform IaC files - Artifact ID: ${process.env.ARTIFACT_ID}
             - Terraform IaC files - Artifact URL: ${process.env.ARTIFACT_URL}
             `;
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: PROD
-      url: http://tsvi.eastus.cloudapp.azure.com
+      url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
     needs: [staging-end2end-tests]
     steps:
       - name: Checkout code
@@ -146,3 +146,44 @@ jobs:
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
         working-directory: ./terraform/production
+      
+      - name: Upload Teraaform State and files
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: terraform-state-prod
+          path: ./terraform/production/
+
+      - name: Generate Artifact URL
+        id: generate_artifact_url
+        run: |
+          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state-prod") | .id')
+          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
+          echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+          CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
+          ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
+          ARTIFACT_URL: ${{ env.ARTIFACT_URL }}
+
+        with:
+          tag_name: ${{ inputs.image_tag }}
+          release_name: "Production Release - ${{ inputs.image_tag }}"
+          body: |
+            🎉 **Production Environment Deployed!** 🎉
+      
+            🚀 **Version:** ${{ inputs.image_tag }}
+      
+            The production environment has been successfully deployed! Please join us in celebrating this milestone. Here are the details of the deployment:
+      
+             **Additional Information:**
+            - **App Server URL:** https://${process.env.CONTAINER_APP_URL}
+      
+            🎊 Thank you to everyone who contributed to this release! Let's keep up the great work! 🎊
+          
+          draft: false
+          prerelease: false
