@@ -1,4 +1,4 @@
-name: Build on Issue Closed
+name: Housekeeping - Destroy Staging on Issue Closed with label "staging"
 
 on:
   issues:

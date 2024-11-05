@@ -1,4 +1,4 @@
-name: Close stale qa issues with label "staging"
+name: Housekeeping - Close stale qa issues with label "staging"
 
 on:
   schedule:
