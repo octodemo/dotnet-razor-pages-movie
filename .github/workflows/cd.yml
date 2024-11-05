@@ -93,7 +93,7 @@ jobs:
         with:
           script: |
             const issueTemplate = `
-            ### [🚀 Staging Environment Ready for Testing 🚀](${process.env.CONTAINER_APP_URL})
+            ### 🚀 Staging Environment Ready for Testing 🚀
                 
             The staging environment is ready for testing. Please verify that the following items are working as expected:
             

@@ -1,0 +1,68 @@
+name: Housekeeping - Destroy Demo Resources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+  actions: write
+
+jobs:
+  destroy-demo-resources-stage:
+    runs-on: ubuntu-latest
+    environment: STAGE
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: 'Az CLI Login via OIDC'
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+
+      - name: Terraform Destroy
+        run: |
+          terraform init
+          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+        working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+
+  destroy-demo-resources-prod:
+    runs-on: ubuntu-latest
+    environment: PROD
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: 'Az CLI Login via OIDC'
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+
+      - name: Terraform Destroy
+        run: |
+          terraform init
+          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+        working-directory: ./terraform/production
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
