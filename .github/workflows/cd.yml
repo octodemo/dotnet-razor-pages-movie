@@ -123,7 +123,7 @@ jobs:
     permissions:
       actions: read
       id-token: write # This is required for requesting the JWT
-      contents: read  # This is required for actions/checkout
+      contents: write  # This is required for actions/checkout and the create-release action
     
     runs-on: ubuntu-latest
     environment: 
