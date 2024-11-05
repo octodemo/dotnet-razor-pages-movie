@@ -25,8 +25,7 @@ on:
       - '**/README.md'
       - '.devcontainer/**'
       - '.github/ISSUE_TEMPLATE/**'
-      - '.github/workflows/staging*.yml'
-      - '.github/workflows/destroy*.yml'
+      - '.github/workflows/housekeeping*.yml'
 
   # running on pull requests to main and develop branches
   pull_request:
