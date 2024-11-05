@@ -93,20 +93,21 @@ jobs:
         with:
           script: |
             const issueTemplate = `
-            ### Staging Environment Ready for Testing
-            
+            ### [🚀 Staging Environment Ready for Testing 🚀](${process.env.CONTAINER_APP_URL})
+                
             The staging environment is ready for testing. Please verify that the following items are working as expected:
             
-            - [ ] The staging environment is up and running
-            - [ ] The staging environment is accessible
-            - [ ] The staging environment is using the correct image tag
-            - [ ] The staging environment is using the correct database schema
+            - [ ] ✅ The staging environment is up and running
+            - [ ] 🌐 The staging environment is accessible
+            - [ ] 🏷️ The staging environment is using the correct image tag
+            - [ ] 📊 The staging environment is using the correct database schema
             
-            Additional Information:
-            - Image Tag: https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie tag: ${process.env.IMAGE_TAG}
-            - App Server URL: https://${process.env.CONTAINER_APP_URL}
-            - Terraform IaC files - Artifact ID: ${process.env.ARTIFACT_ID}
-            - Terraform IaC files - Artifact URL: ${process.env.ARTIFACT_URL}
+            **Additional Information:**
+            - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
+            - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
+            - **Terraform IaC files:**
+              - **Artifact ID:** \`${process.env.ARTIFACT_ID}\`
+              - **Artifact URL:** [📁 Download](${process.env.ARTIFACT_URL})
             `;
             
             github.rest.issues.create({

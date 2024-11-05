@@ -22,7 +22,7 @@ resource "azurerm_container_app" "production" {
   }
 
   template {
-    revision_suffix = var.revision_suffix
+    revision_suffix = "${var.revision_suffix}-${var.image_tag}"
 
     container {
       name   = var.container_app_name

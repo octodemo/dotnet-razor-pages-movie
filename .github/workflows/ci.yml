@@ -139,7 +139,7 @@ jobs:
     
     - name: Split Tests
       id: split-test
-      uses: chaosaffe/split-tests@v1-alpha.1
+      uses: scruplelesswizard/split-tests@4f1ca766cb93923ca216e02f1aefed20944e313f
       with:
         glob: RazorPagesMovie.Tests/**/*Tests.cs
         split-total: ${{ env.total-runners }}
@@ -228,7 +228,7 @@ jobs:
       # build the docker image using the Dockerfile in the root of the repository 
       # and tag it with the current run number from the github action workflow run
       - name: Log in to the GH Container Registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 # using the docker login action from the github marketplace - github.com/marketplace/actions/docker-login
+        uses: docker/login-action@v3.3.0 # using the docker login action from the github marketplace - github.com/marketplace/actions/docker-login
         with:
           registry: ${{ env.REGISTRY }} # using the registry environment variable
           username: ${{ github.actor }} # using the github.actor context
