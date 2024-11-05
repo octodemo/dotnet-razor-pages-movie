@@ -94,7 +94,7 @@ jobs:
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ env.RUNTIME }}
 
     - name: Upload published app
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.4.3
       with:
         name: razor-linux-arm64
         path: publish/
@@ -118,15 +118,15 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4.0.1
+      uses: actions/setup-dotnet@v4.1.0
       with:
         dotnet-version: '6.0.x'
     
     - name: Cache NuGet packages
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.1.2
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
@@ -134,7 +134,7 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+      uses: mxschmitt/action-tmate@v3.19
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
     
     - name: Split Tests
@@ -220,7 +220,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3 # download the published app artifact from the build job
+      - uses: actions/download-artifact@v4.1.8 # download the published app artifact from the build job
         with:
           name: razor-linux-arm64
           path: publish/
@@ -236,7 +236,7 @@ jobs:
 
       - name: Build and push Docker image
         id: build_image
-        uses: docker/build-push-action@v4 # using the docker build and push action from the github marketplace - github.com/marketplace/actions/build-and-push-docker-images
+        uses: docker/build-push-action@v6.9.0 # using the docker build and push action from the github marketplace - github.com/marketplace/actions/build-and-push-docker-images
         with: 
           context: . # using the current directory as the context
           push: true # push the docker image to the registry

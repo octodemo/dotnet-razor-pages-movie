@@ -68,6 +68,11 @@ jobs:
         run: |
           echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
         working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
 
       - name: Upload Teraaform State and files
         uses: actions/upload-artifact@v4.4.3
@@ -170,9 +175,19 @@ jobs:
           echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
           echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
       
+      - name: Capture Terraform Output
+        id: output
+        run: echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
+        working-directory: ./terraform/production
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1.14.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
@@ -181,8 +196,7 @@ jobs:
           ARTIFACT_URL: ${{ env.ARTIFACT_URL }}
 
         with:
-          tag_name: ${{ inputs.image_tag }}
-          release_name: "Production Release - ${{ inputs.image_tag }}"
+          tag: ${{ inputs.image_tag }}
           body: |
             🎉 **Production Environment Deployed!** 🎉
       
@@ -194,6 +208,3 @@ jobs:
             - **App Server URL:** https://${process.env.CONTAINER_APP_URL}
       
             🎊 Thank you to everyone who contributed to this release! Let's keep up the great work! 🎊
-          
-          draft: false
-          prerelease: false
