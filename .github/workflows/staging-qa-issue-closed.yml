@@ -28,10 +28,40 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Terraform Init and Destroy
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+
+      - name: Terraform Plan Destroy
+        id: plan_destroy
+        run: terraform plan -destroy -out=tfplan
+        working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+
+      - name: Check if Destroy is Needed
+        id: check_destroy
         run: |
-          terraform init
-          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+          if terraform show -json tfplan | jq -e '.resource_changes | length == 0'; then
+            echo "No resources to destroy."
+            echo "DESTROY_NEEDED=false" >> $GITHUB_ENV
+          else
+            echo "Resources need to be destroyed."
+            echo "DESTROY_NEEDED=true" >> $GITHUB_ENV
+          fi
+        working-directory: ./terraform/staging
+
+      - name: Terraform Destroy
+        if: env.DESTROY_NEEDED == 'true'
+        run: terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
         working-directory: ./terraform/staging
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
