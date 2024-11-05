@@ -26,7 +26,7 @@ resource "azurerm_container_app" "staging" {
       name   = "${var.container_app_name}-staging"
       image  = "${var.container_registry}:${var.image_tag}"
       cpu    = 0.5
-      memory = "1.0Gi"
+      memory = "1Gi"
 
       env {
         name  = "ConnectionStrings__RazorPagesMovieContext"
