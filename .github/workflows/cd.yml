@@ -205,6 +205,6 @@ jobs:
             The production environment has been successfully deployed! Please join us in celebrating this milestone. Here are the details of the deployment:
       
              **Additional Information:**
-            - **App Server URL:** https://${process.env.CONTAINER_APP_URL}
+            - **App Server URL:** https://${{ env.CONTAINER_APP_URL }}
       
             🎊 Thank you to everyone who contributed to this release! Let's keep up the great work! 🎊
