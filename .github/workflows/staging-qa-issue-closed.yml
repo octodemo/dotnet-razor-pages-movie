@@ -29,7 +29,7 @@ jobs:
       id: extract-id
       run: |
         echo "Extracting Artifact ID from issue body..."
-        ARTIFACT_ID=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=Artifact ID: ).*')
+        ARTIFACT_ID=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=Artifact ID: `)[^`]+')
         echo "ARTIFACT_ID=${ARTIFACT_ID}" >> $GITHUB_ENV
 
     - name: Download Artifact
@@ -41,3 +41,8 @@ jobs:
         cd terraform
         terraform init
         terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true

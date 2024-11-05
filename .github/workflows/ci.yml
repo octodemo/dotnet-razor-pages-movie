@@ -65,7 +65,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4.0.1
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
 
     - name: List Artifacts
       id: list-artifacts
@@ -219,7 +219,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
       - uses: actions/download-artifact@v4.1.8 # download the published app artifact from the build job
         with:
           name: razor-linux-arm64
