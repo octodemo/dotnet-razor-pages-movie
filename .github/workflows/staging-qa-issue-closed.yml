@@ -30,7 +30,6 @@ jobs:
 
       - name: Terraform Init and Destroy
         run: |
-          cd terraform/staging
           terraform init
           terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
         working-directory: ./terraform/staging
