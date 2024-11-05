@@ -18,31 +18,24 @@ jobs:
     environment: STAGE
 
     steps:
-    - name: 'Az CLI Login via OIDC'
-      uses: azure/login@v2.2.0
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
 
-    - name: Extract Artifact ID
-      id: extract-id
-      run: |
-        echo "Extracting Artifact ID from issue body..."
-        ARTIFACT_ID=$(echo "${{ github.event.issue.body }}" | grep -oP '(?<=Artifact ID: `)[^`]+')
-        echo "ARTIFACT_ID=${ARTIFACT_ID}" >> $GITHUB_ENV
+      - name: 'Az CLI Login via OIDC'
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Download Artifact
-      run: |
-        echo "Downloading artifact..."
-        echo "curl -L -H 'Accept: application/vnd.github+json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' -H 'X-GitHub-Api-Version: 2022-11-28' https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${ARTIFACT_ID}/zip -o artifact.zip"
-        curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${ARTIFACT_ID}/zip -o artifact.zip
-        unzip artifact.zip -d terraform
-        cd terraform
-        terraform init
-        terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        ARM_USE_OIDC: true
+      - name: Terraform Init and Destroy
+        run: |
+          cd terraform/staging
+          terraform init
+          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+        working-directory: ./terraform/staging
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
