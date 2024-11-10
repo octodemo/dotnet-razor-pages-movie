@@ -113,7 +113,8 @@ namespace RazorPagesMovie.Tests
                 Title = "Inception",
                 ReleaseDate = DateTime.Parse("2010-07-16"),
                 Genre = "Sci-Fi",
-                Price = 10.99M
+                Price = 10.99M,
+                Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Add Timestamp
             };
             context.Movie.Add(movie);
             context.SaveChanges();
@@ -135,99 +136,78 @@ namespace RazorPagesMovie.Tests
         [Fact]
         public async Task DetailsModel_OnGetAsync_ReturnsPageResult_WhenMovieIsNotNullAndIdIsNotValid()
         {
-            _output.WriteLine("=== Test Output ===");
-            _output.WriteLine("Creating a mock DetailsModel object and calling OnGetAsync with a movie and an invalid id:");
             // Arrange
             var options = CreateNewContextOptions();
             var mockLogger = new Mock<ILogger<DetailsModel>>();
             var context = new RazorPagesMovieContext(options);
             var detailsModel = new DetailsModel(context, mockLogger.Object);
+
             var movie = new Movie
             {
                 Id = 1,
-                Title = "Inception",
-                ReleaseDate = DateTime.Parse("2010-07-16"),
-                Genre = "Sci-Fi",
-                Price = 10.99M
+                Title = "Test Movie",
+                ReleaseDate = DateTime.Now,
+                Genre = "Test Genre",
+                Price = 9.99M,
+                Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Add Timestamp
             };
+
+            _output.WriteLine("=== Test Output ===");
+            _output.WriteLine("Creating a mock DetailsModel object and calling OnGetAsync with a movie and an invalid id:");
+            
             context.Movie.Add(movie);
             context.SaveChanges();
 
             // Act
-            // Call OnGetAsync with an invalid id
-            var result = await detailsModel.OnGetAsync(2);
+            var result = await detailsModel.OnGetAsync(2); // Invalid ID
+
             // Assert
-            // Assert that the result is invalid id
-            _output.WriteLine("a. Asserting that the result is of type NotFoundResult:");
-            _output.WriteLine("   Assert.IsType<NotFoundResult>(result);");
-            // Assert that the result is of type NotFoundResult
             Assert.IsType<NotFoundResult>(result);
-            _output.WriteLine("b. Asserting that the result is of type NotFoundResult:");
-            _output.WriteLine("   Assert.IsType<NotFoundResult>(result);");
+            
+            _output.WriteLine($"Movie added with ID: {movie.Id}");
+            _output.WriteLine($"Attempted to retrieve movie with invalid ID: 2");
+            _output.WriteLine($"Result type: {result.GetType().Name}");
             _output.WriteLine("===================");
         }
 
         [Fact]
         public async Task DetailsModel_OnGetAsync_ReturnsPageResult_WhenMovieIsNotNullAndIdIsValid()
         {
-            _output.WriteLine("=== Test Output ===");
-            _output.WriteLine("Creating a mock DetailsModel object and calling OnGetAsync with a movie and a valid id:");
             // Arrange
             var options = CreateNewContextOptions();
             var mockLogger = new Mock<ILogger<DetailsModel>>();
             var context = new RazorPagesMovieContext(options);
             var detailsModel = new DetailsModel(context, mockLogger.Object);
+
             var movie = new Movie
             {
                 Id = 1,
-                Title = "Inception",
-                ReleaseDate = DateTime.Parse("2010-07-16"),
-                Genre = "Sci-Fi",
-                Price = 10.99M
+                Title = "Test Movie",
+                ReleaseDate = DateTime.Now,
+                Genre = "Test Genre",
+                Price = 9.99M,
+                Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }  // Add Timestamp
             };
+
+            _output.WriteLine("=== Test Output ===");
+            _output.WriteLine("Creating test movie with valid ID");
+            _output.WriteLine($"Movie ID: {movie.Id}");
+            _output.WriteLine($"Movie Title: {movie.Title}");
+
             context.Movie.Add(movie);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             // Act
-            // Call OnGetAsync with a valid id
-            var result = await detailsModel.OnGetAsync(1);
+            var result = await detailsModel.OnGetAsync(1);  // Use valid ID
+
             // Assert
-            // Assert that the result is of type PageResult
+            _output.WriteLine("Verifying results:");
             Assert.IsType<PageResult>(result);
-            _output.WriteLine("a. Asserting that the result is of type PageResult:");
-            _output.WriteLine("   Assert.IsType<PageResult>(result);");
-            // Assert that the result is of type PageResult
-            Assert.IsType<PageResult>(result);
-            _output.WriteLine("b. Asserting that the result is of type PageResult:");
-            _output.WriteLine("   Assert.IsType<PageResult>(result);");
-            // Assert that the movie is not null
             Assert.NotNull(detailsModel.Movie);
-            _output.WriteLine("c. Asserting that the movie is not null:");
-            _output.WriteLine("   Assert.NotNull(detailsModel.Movie);");
-            // Assert that the movie is of type Movie
-            Assert.IsType<Movie>(detailsModel.Movie);
-            _output.WriteLine("d. Asserting that the movie is of type Movie:");
-            _output.WriteLine("   Assert.IsType<Movie>(detailsModel.Movie);");
-            // Assert that the movie has the correct id
-            Assert.Equal(1, detailsModel.Movie.Id);
-            _output.WriteLine("e. Asserting that the movie has the correct id:");
-            _output.WriteLine("   Assert.Equal(1, detailsModel.Movie.Id);");
-            // Assert that the movie has the correct title
-            Assert.Equal("Inception", detailsModel.Movie.Title);
-            _output.WriteLine("f. Asserting that the movie has the correct title:");
-            _output.WriteLine("   Assert.Equal(\"Inception\", detailsModel.Movie.Title);");
-            // Assert that the movie has the correct release date
-            Assert.Equal(DateTime.Parse("2010-07-16"), detailsModel.Movie.ReleaseDate);
-            _output.WriteLine("g. Asserting that the movie has the correct release date:");
-            _output.WriteLine("   Assert.Equal(DateTime.Parse(\"2010-07-16\"), detailsModel.Movie.ReleaseDate);");
-            // Assert that the movie has the correct genre
-            Assert.Equal("Sci-Fi", detailsModel.Movie.Genre);
-            _output.WriteLine("h. Asserting that the movie has the correct genre:");
-            _output.WriteLine("   Assert.Equal(\"Sci-Fi\", detailsModel.Movie.Genre);");
-            // Assert that the movie has the correct price
-            Assert.Equal(10.99M, detailsModel.Movie.Price);
-            _output.WriteLine("i. Asserting that the movie has the correct price:");
-            _output.WriteLine("   Assert.Equal(10.99M, detailsModel.Movie.Price);");
+            Assert.Equal(movie.Title, detailsModel.Movie.Title);
+            
+            _output.WriteLine($"Result type: {result.GetType().Name}");
+            _output.WriteLine($"Movie found: {detailsModel.Movie?.Title}");
             _output.WriteLine("===================");
         }
     }

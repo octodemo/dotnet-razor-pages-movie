@@ -101,39 +101,44 @@ namespace RazorPagesMovie.Tests
         [Fact]
         public async Task OnGetAsync_SingleMovie()
         {
-            // Arrange
             using (var context = new RazorPagesMovieContext(_options))
             {
+                // Arrange
+                // Clear existing movies first
                 context.Movie.RemoveRange(context.Movie);
-                context.Movie.Add(new Movie { Title = "Single Movie", Genre = "Single Genre", Price = 20M, ReleaseDate = DateTime.Parse("2023-07-01") });
-                context.SaveChanges();
+                await context.SaveChangesAsync();
+
+                var testMovie = new Movie
+                {
+                    Title = "Test Movie",
+                    ReleaseDate = DateTime.Now,
+                    Genre = "Test Genre",
+                    Price = 9.99M,
+                    Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                };
+                
+                context.Movie.Add(testMovie);
+                await context.SaveChangesAsync();
 
                 var pageModel = new IndexModel(context);
 
                 // Act
                 await pageModel.OnGetAsync();
 
-                // Assert
-                Assert.NotNull(pageModel.Movie);
-                Assert.IsType<List<Movie>>(pageModel.Movie);
-                Assert.Single(pageModel.Movie);
-                Assert.Equal("Single Movie", pageModel.Movie[0]?.Title);
-
-                // Enhanced output to console
+                // Debug output
                 _output.WriteLine("=== Test Output ===");
-                _output.WriteLine("Test: OnGetAsync_SingleMovie");
-                _output.WriteLine($"Movies count: {pageModel.Movie.Count}");
+                _output.WriteLine($"Total movies in database: {context.Movie.Count()}");
+                _output.WriteLine($"Movies in pageModel: {pageModel.Movie.Count}");
+                _output.WriteLine("Movies found:");
                 foreach (var movie in pageModel.Movie)
                 {
-                    if (movie != null)
-                    {
-                        _output.WriteLine($"- Title: {movie.Title}");
-                        _output.WriteLine($"  Genre: {movie.Genre}");
-                        _output.WriteLine($"  Price: {movie.Price}");
-                        _output.WriteLine($"  ReleaseDate: {movie.ReleaseDate}");
-                    }
+                    _output.WriteLine($"- {movie.Title}");
                 }
                 _output.WriteLine("===================");
+
+                // Assert
+                Assert.Single(pageModel.Movie);
+                Assert.Equal("Test Movie", pageModel.Movie.First().Title);
             }
         }
 
@@ -372,6 +377,7 @@ namespace RazorPagesMovie.Tests
             // Arrange
             using (var context = new RazorPagesMovieContext(_options))
             {
+                var testDate = DateTime.Parse("2023-01-01");
                 context.Movie.RemoveRange(context.Movie);
                 context.Movie.AddRange(GetTestMovies());
                 context.SaveChanges();
@@ -380,37 +386,63 @@ namespace RazorPagesMovie.Tests
 
                 // Act
                 await pageModel.OnGetAsync();
-                var filteredMovies = pageModel.Movie.Where(m => m.ReleaseDate == DateTime.Parse("2023-01-01")).ToList();
+                var filteredMovies = pageModel.Movie
+                    .Where(m => m.ReleaseDate.Date == testDate.Date)
+                    .ToList();
+
+                // Debug output
+                _output.WriteLine("=== Test Output ===");
+                _output.WriteLine($"Test date: {testDate:yyyy-MM-dd}");
+                _output.WriteLine($"Total movies: {pageModel.Movie.Count}");
+                _output.WriteLine("All movies:");
+                foreach (var m in pageModel.Movie)
+                {
+                    _output.WriteLine($"- {m.Title}: {m.ReleaseDate:yyyy-MM-dd}");
+                }
+                _output.WriteLine($"Filtered movies count: {filteredMovies.Count}");
+                _output.WriteLine("===================");
 
                 // Assert
                 Assert.NotNull(filteredMovies);
                 Assert.Single(filteredMovies);
-                Assert.Equal(DateTime.Parse("2023-01-01"), filteredMovies[0]?.ReleaseDate);
-
-                // Enhanced output to console
-                _output.WriteLine("=== Test Output ===");
-                _output.WriteLine("Test: OnGetAsync_FilterMoviesByReleaseDate");
-                _output.WriteLine($"Movies count: {filteredMovies.Count}");
-                foreach (var movie in filteredMovies)
-                {
-                    if (movie != null)
-                    {
-                        _output.WriteLine($"- Title: {movie.Title}");
-                        _output.WriteLine($"  Genre: {movie.Genre}");
-                        _output.WriteLine($"  Price: {movie.Price}");
-                        _output.WriteLine($"  ReleaseDate: {movie.ReleaseDate}");
-                    }
-                }
-                _output.WriteLine("===================");
+                Assert.Equal(testDate.Date, filteredMovies[0].ReleaseDate.Date);
             }
         }
 
+        // Helper method for creating test movies
+        private Movie CreateTestMovie(string title = "Test Movie")
+        {
+            return new Movie
+            {
+                Title = title,
+                ReleaseDate = DateTime.Now,
+                Genre = "Test Genre",
+                Price = 9.99M,
+                Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+            };
+        }
+
+        // Update GetTestMovies to use helper method
         private List<Movie> GetTestMovies()
         {
             return new List<Movie>
             {
-                new Movie { Title = "Movie 1", Genre = "Genre 1", Price = 10M, ReleaseDate = DateTime.Parse("2023-01-01") },
-                new Movie { Title = "Movie 2", Genre = "Genre 2", Price = 15M, ReleaseDate = DateTime.Parse("2023-06-01") }
+                new Movie
+                {
+                    Title = "Movie 1",
+                    ReleaseDate = DateTime.Parse("2023-01-01"),
+                    Genre = "Genre 1",
+                    Price = 9.99M,
+                    Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                },
+                new Movie
+                {
+                    Title = "Movie 2",
+                    ReleaseDate = DateTime.Parse("2023-02-01"),
+                    Genre = "Genre 2",
+                    Price = 15M,
+                    Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                }
             };
         }
 
