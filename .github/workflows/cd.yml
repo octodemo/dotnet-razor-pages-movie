@@ -136,6 +136,7 @@ jobs:
       name: PROD
       url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
     needs: [staging-end2end-tests]
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
