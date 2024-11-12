@@ -10,21 +10,21 @@ namespace RazorPagesMovie.Models
         public int Id { get; set; }
 
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty; // Initialize with a default value
 
         [Required]
         [DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 
         [Required]
-        public string Genre { get; set; }
+        public string Genre { get; set; } = string.Empty; // Initialize with a default value
 
         [Required]
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
 
         [Required]
-        public string Rating { get; set; }
+        public string Rating { get; set; } = string.Empty; // Initialize with a default value
 
         public int? UserId { get; set; }
         public User? User { get; set; }

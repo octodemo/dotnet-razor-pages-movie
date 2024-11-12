@@ -230,7 +230,7 @@ namespace RazorPagesMovie.Tests
                 // Assert
                 Assert.NotNull(filteredMovies);
                 Assert.Single(filteredMovies);
-                Assert.Equal("Test Movie 1", filteredMovies.First().Title);
+                Assert.Equal("Test Movie 1", filteredMovies!.First().Title);
             }
         }
 
@@ -348,7 +348,7 @@ namespace RazorPagesMovie.Tests
                 // Assert
                 Assert.NotNull(filteredMovies);
                 Assert.Single(filteredMovies);
-                Assert.Equal(DateTime.Parse("1989-2-12"), filteredMovies.First().ReleaseDate);
+                Assert.Equal(DateTime.Parse("1989-2-12"), filteredMovies!.First().ReleaseDate);
             }
         }
 

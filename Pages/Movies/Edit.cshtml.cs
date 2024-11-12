@@ -21,7 +21,7 @@ namespace RazorPagesMovie.Pages.Movies
         }
 
         [BindProperty]
-        public Movie Movie { get; set; } = default!;
+        public Movie? Movie { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -41,11 +41,12 @@ namespace RazorPagesMovie.Pages.Movies
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || Movie == null)
             {
                 return Page();
             }
 
+            var movieEntity = (Movie)Movie;
             _context.Attach(Movie).State = EntityState.Modified;
 
             try
