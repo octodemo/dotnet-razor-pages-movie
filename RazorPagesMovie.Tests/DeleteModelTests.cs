@@ -34,6 +34,33 @@ namespace RazorPagesMovie.Tests
                 .Options;
         }
 
+        private List<Movie> GetTestMovies()
+        {
+            return new List<Movie>
+            {
+                new Movie
+                {
+                    Id = 1,
+                    Title = "Test Movie 1",
+                    ReleaseDate = DateTime.Parse("1989-2-12"),
+                    Genre = "Romantic Comedy",
+                    Price = 7.99M,
+                    Rating = "PG", // Add Rating
+                    Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Initialize with a default value
+                },
+                new Movie
+                {
+                    Id = 2,
+                    Title = "Test Movie 2",
+                    ReleaseDate = DateTime.Parse("1984-3-13"),
+                    Genre = "Comedy",
+                    Price = 8.99M,
+                    Rating = "PG", // Add Rating
+                    Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Initialize with a default value
+                }
+            };
+        }
+
         [Fact]
         public async Task CanDeleteMovie()
         {
@@ -47,6 +74,7 @@ namespace RazorPagesMovie.Tests
                     Genre = "Test Genre",
                     Price = 10M,
                     ReleaseDate = DateTime.Now,
+                    Rating = "PG", // Add Rating
                     Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }  // Add Timestamp
                 };
                 
@@ -104,6 +132,7 @@ namespace RazorPagesMovie.Tests
                     Genre = "Test Genre", 
                     Price = 10M, 
                     ReleaseDate = DateTime.Now,
+                    Rating = "PG", // Add Rating
                     Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Add Timestamp
                 };
                 context.Movie.Add(movie);
@@ -162,6 +191,7 @@ namespace RazorPagesMovie.Tests
                     Genre = "Test Genre",
                     Price = 10M,
                     ReleaseDate = DateTime.Now,
+                    Rating = "PG",
                     Timestamp = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 } // Add Timestamp
                 };
 
