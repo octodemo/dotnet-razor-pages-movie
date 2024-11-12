@@ -2,10 +2,10 @@
 @model RazorPagesMovie.Pages.Movies.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Movie";
 }
 
-<h1>Edit</h1>
+<h1>Edit Movie</h1>
 
 <h4>Movie</h4>
 <hr />
@@ -14,6 +14,7 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Movie.Id" />
+            <input type="hidden" asp-for="Movie.Timestamp" />
             <div class="form-group">
                 <label asp-for="Movie.Title" class="control-label"></label>
                 <input asp-for="Movie.Title" class="form-control" />
@@ -51,5 +52,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }

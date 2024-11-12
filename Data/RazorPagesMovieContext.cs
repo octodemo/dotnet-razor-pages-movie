@@ -37,6 +37,7 @@ namespace RazorPagesMovie.Data
 
                 entity.HasIndex(m => m.UserId);
                 entity.Property(m => m.Timestamp).IsConcurrencyToken();
+                entity.Property(m => m.Timestamp).HasDefaultValue(new byte[8]); // Set default value for Timestamp
             });
 
             // Seed data with hashed passwords

@@ -13,9 +13,9 @@ namespace RazorPagesMovie.Pages.Movies
 {
     public class EditModel : PageModel
     {
-        private readonly RazorPagesMovie.Data.RazorPagesMovieContext _context;
+        private readonly RazorPagesMovieContext _context;
 
-        public EditModel(RazorPagesMovie.Data.RazorPagesMovieContext context)
+        public EditModel(RazorPagesMovieContext context)
         {
             _context = context;
         }
@@ -30,17 +30,15 @@ namespace RazorPagesMovie.Pages.Movies
                 return NotFound();
             }
 
-            var movie =  await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
-            if (movie == null)
+            Movie = await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Movie == null)
             {
                 return NotFound();
             }
-            Movie = movie;
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
