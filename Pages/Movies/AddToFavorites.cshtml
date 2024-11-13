@@ -1,0 +1,14 @@
+@page
+@model RazorPagesMovie.Pages.Movies.AddToFavoritesModel
+
+@{
+    ViewData["Title"] = "Add to Favorites";
+}
+
+<h1>Add to Favorites</h1>
+
+<p>Movie "@Model.Movie?.Title" has been added to your favorites.</p>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>

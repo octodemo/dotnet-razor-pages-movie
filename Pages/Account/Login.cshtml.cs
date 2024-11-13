@@ -37,7 +37,6 @@ namespace RazorPagesMovie.Pages.Account
             }
 
             var user = await _context.Users
-                .Include(u => u.Movies) // Include movies related to the user
                 .FirstOrDefaultAsync(u => u.Username == LoginInput.Username);
 
             if (user == null || user.Password != LoginInput.Password)
@@ -50,8 +49,18 @@ namespace RazorPagesMovie.Pages.Account
             HttpContext.Session.SetInt32("UserId", user.Id);
             HttpContext.Session.SetString("Username", user.Username);
 
-            _logger.LogInformation("User {Username} logged in at {Time} with {MovieCount} movies", 
-                user.Username, DateTime.UtcNow, user.Movies.Count);
+            // Retrieve user role
+            var role = user.Role.ToString();
+
+            // Log user role to console
+            Console.WriteLine($"User {user.Username} logged in at {DateTime.UtcNow} with role: {role}");
+
+            // Log user role using logger
+            _logger.LogInformation("User {Username} logged in at {Time} with role: {Role}", 
+                user.Username, DateTime.UtcNow, role);
+
+            // Store role in Session
+            HttpContext.Session.SetString("UserRole", role);
 
             return RedirectToPage("/Movies/Index");
         }
