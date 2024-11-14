@@ -39,7 +39,11 @@ namespace RazorPagesMovie.Pages.Account
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == LoginInput.Username);
 
-            if (user == null || user.Password != LoginInput.Password)
+            if (user == null || !VerifyPassword(LoginInput.Password, user.Password))
+            {
+                ErrorMessage = "Invalid username or password";
+                return Page();
+            }
             {
                 ErrorMessage = "Invalid username or password";
                 return Page();
