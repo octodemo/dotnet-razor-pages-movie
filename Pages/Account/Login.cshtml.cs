@@ -33,15 +33,25 @@ namespace RazorPagesMovie.Pages.Account
         {
             if (!ModelState.IsValid)
             {
+                ErrorMessage = "Invalid input. Please check your username and password.";
+                _logger.LogWarning("Invalid input: {ModelStateErrors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return Page();
             }
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == LoginInput.Username);
 
-            if (user == null || user.Password != LoginInput.Password)
+            if (user == null)
             {
                 ErrorMessage = "Invalid username or password";
+                _logger.LogWarning("Login failed: Invalid username '{Username}'", LoginInput.Username);
+                return Page();
+            }
+
+            if (user.Password != LoginInput.Password)
+            {
+                ErrorMessage = "Invalid username or password";
+                _logger.LogWarning("Login failed: Invalid password for username '{Username}'", LoginInput.Username);
                 return Page();
             }
 
