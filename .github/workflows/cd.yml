@@ -172,7 +172,7 @@ jobs:
         env:
           SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
           ConnectionStrings__RazorPagesMovieContext: ${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT }}
-          ASPNETCORE_URLS: http://0.0.0.0:5001
+          ASPNETCORE_URLS: http://0.0.0.0
           TAG: ${{ inputs.image_tag }}
 
       - name: List running Docker containers
@@ -182,7 +182,7 @@ jobs:
         run: |
           echo "Waiting for app to be ready..."
           for i in {1..30}; do
-            if curl -s http://localhost:5001/ > /dev/null; then
+            if curl -s http://localhost/ > /dev/null; then
               echo "App is up!"
               break
             fi
@@ -190,13 +190,13 @@ jobs:
           done
 
       - name: Verify application is accessible
-        run: curl -v http://localhost:5001/
+        run: curl -v http://localhost
 
       - name: Run UI Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
         env:
-          ASPNETCORE_BASE_URL: http://localhost:5001
+          ASPNETCORE_BASE_URL: http://localhost
           ASPNETCORE_ENVIRONMENT: Development
           ConnectionStrings__RazorPagesMovieContext: ${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT }}
 
