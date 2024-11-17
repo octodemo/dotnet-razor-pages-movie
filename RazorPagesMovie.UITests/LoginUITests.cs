@@ -21,6 +21,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithValidCredentials_ShouldRedirectToHomePage()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -42,6 +43,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithInvalidCredentials_ShouldShowErrorMessage()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -64,6 +66,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithEmptyPassword_ShouldShowErrorMessage()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -85,6 +88,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithEmptyUsername_ShouldShowErrorMessage()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -106,6 +110,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithEmptyUsernameAndPassword_ShouldShowErrorMessages()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -132,6 +137,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Login_WithWhitespaceUsername_ShouldShowErrorMessage()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             _driver.Navigate().GoToUrl(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
@@ -153,6 +159,7 @@ namespace RazorPagesMovie.Tests.UITests
         [Fact]
         public async Task Admin_Can_See_Edit_Delete_Others_Cannot()
         {
+            await _driver.Navigate().GoToUrlAsync(_url); // Added await
             // Login as admin user
             _driver.Navigate().GoToUrl(_url);
 
