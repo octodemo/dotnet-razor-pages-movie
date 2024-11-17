@@ -161,6 +161,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
       - name: Build and Run Docker Compose
         run: |
           docker compose up -d --build webapp
@@ -173,17 +178,25 @@ jobs:
       - name: Wait for application to be ready
         run: |
           echo "Waiting for app to be ready..."
-          sleep 20
+          for i in {1..30}; do
+            if curl -s http://localhost:5001/ > /dev/null; then
+              echo "App is up!"
+              break
+            fi
+            sleep 5
+          done
+
+      - name: Verify application is accessible
+        run: curl -v http://localhost:5001/
 
       - name: Run UI Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
         env:
           ASPNETCORE_BASE_URL: http://localhost:5001
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__RazorPagesMovieContext: ${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT }}
 
-      - name: Stop Docker Compose
-        if: always()
-        run: docker compose down
 
   production:
     permissions:
