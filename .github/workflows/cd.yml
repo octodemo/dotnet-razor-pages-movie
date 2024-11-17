@@ -154,7 +154,10 @@ jobs:
 
           echo -e "\033[0;32mdotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger \"console;verbosity=detailed\"\033[0m"
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
-
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__RazorPagesMovieContext: '${{ secrets.CONNECTIONSTRINGS__RAZORPAGESMOVIECONTEXT }}'
+  
   production:
     permissions:
       actions: read
