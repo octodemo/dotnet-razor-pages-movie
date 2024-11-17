@@ -175,6 +175,9 @@ jobs:
           ASPNETCORE_URLS: http://0.0.0.0:5001
           TAG: ${{ inputs.image_tag }}
 
+      - name: List running Docker containers
+        run: docker ps -a
+
       - name: Wait for application to be ready
         run: |
           echo "Waiting for app to be ready..."
