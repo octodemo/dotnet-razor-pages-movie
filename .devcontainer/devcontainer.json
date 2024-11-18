@@ -2,7 +2,7 @@
     "name": "RazorPagesMovie Dev Container",
     "image": "mcr.microsoft.com/dotnet/sdk:6.0",
     "forwardPorts": [5000, 5001],
-    "postCreateCommand": "dotnet restore && dotnet build",
+    "postCreateCommand": "apt-get update && apt-get install -y docker.io",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
     "workspaceFolder": "/workspace",
     "customizations": {
@@ -11,8 +11,7 @@
                 "terminal.integrated.shell.linux": "/bin/bash"
             },
             "extensions": [
-                "ms-dotnettools.csharp",
-                "ms-azuretools.vscode-docker"
+                "GitHub.copilot"
             ]
         }
     }
