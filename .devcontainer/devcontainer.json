@@ -3,12 +3,12 @@
     "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",
     "forwardPorts": [5000, 5001],
     "features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-			"version": "latest",
-			"autoForwardPorts": true,
-			"moby": true
-		},
-    "postCreateCommand": "apt-get update && apt-get install -y docker.io",
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "version": "latest",
+            "autoForwardPorts": true,
+            "moby": true
+        }
+    },
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
     "workspaceFolder": "/workspace",
     "customizations": {
