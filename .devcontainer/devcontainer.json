@@ -1,6 +1,6 @@
 {
     "name": "RazorPagesMovie Dev Container",
-    "image": "mcr.microsoft.com/dotnet/sdk:6.0",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",
     "forwardPorts": [5000, 5001],
     "postCreateCommand": "apt-get update && apt-get install -y docker.io",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
