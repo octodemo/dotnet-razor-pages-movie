@@ -1,3 +1,19 @@
 {
-  "forwardPorts": [5000, 5001]
+    "name": "RazorPagesMovie Dev Container",
+    "image": "mcr.microsoft.com/dotnet/sdk:6.0",
+    "forwardPorts": [5000, 5001],
+    "postCreateCommand": "dotnet restore && dotnet build",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    }
 }
