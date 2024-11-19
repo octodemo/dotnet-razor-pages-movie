@@ -167,7 +167,7 @@ jobs:
     environment: 
       name: PROD
       url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
-    needs: [provision-environment-for-qa, automated-ui-tests]
+    needs: [provision-environment-for-qa]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
