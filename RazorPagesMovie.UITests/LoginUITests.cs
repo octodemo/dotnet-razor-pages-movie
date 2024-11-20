@@ -11,7 +11,7 @@ namespace RazorPagesMovie.Tests.UITests
     public class LoginUITests : IClassFixture<WebDriverFixture>
     {
         private readonly IWebDriver _driver;
-        private readonly string _url = "https://localhost:5001/Account/Login";
+        private readonly string _url = "http://localhost/Account/Login";
 
         public LoginUITests(WebDriverFixture fixture)
         {
@@ -35,9 +35,9 @@ namespace RazorPagesMovie.Tests.UITests
 
             // Wait for the URL to change to the expected page
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(4));
-            wait.Until(d => d.Url == "https://localhost:5001/Movies");
+            wait.Until(d => d.Url == "http://localhost/Movies");
 
-            Assert.Equal("https://localhost:5001/Movies", _driver.Url);
+            Assert.Equal("http://localhost/Movies", _driver.Url);
         }
 
         [Fact]

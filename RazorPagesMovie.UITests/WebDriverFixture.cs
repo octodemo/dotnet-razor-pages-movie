@@ -11,6 +11,7 @@ namespace RazorPagesMovie.Tests.UITests
         public WebDriverFixture()
         {
             var chromeOptions = new ChromeOptions();
+            chromeOptions.AcceptInsecureCertificates = true; // Accept self-signed certificates
             chromeOptions.AddArgument("--headless"); // Optional: Run Chrome headlessly for CI
             chromeOptions.AddArgument("--no-sandbox"); // Optional: Bypass any OS security checks
             chromeOptions.AddArgument("--disable-dev-shm-usage"); // Optional: Overcome limited resource problems
