@@ -90,8 +90,7 @@ jobs:
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
         env:
-          BASE_URL: ${{ steps.capture_outputs.outputs.CONTAINER_APP_URL }}
-        
+          BASE_URL: ${{ env.CONTAINER_APP_URL }}
 
       # Open an issue and notify QA that the staging environment is ready for testing
       - name: Create Issue
