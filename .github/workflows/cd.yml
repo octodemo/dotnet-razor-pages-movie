@@ -33,7 +33,7 @@ jobs:
       contents: read  # This is required for actions/checkout
       issues: write
 
-    runs-on: ubuntu-20.04-16core
+    runs-on: tsvi-linux8cores
     environment: STAGE
     steps:
       - name: Checkout code
