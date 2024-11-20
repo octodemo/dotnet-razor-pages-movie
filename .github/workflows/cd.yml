@@ -26,15 +26,14 @@ env:
   CONTAINER_REGISTRY: "ghcr.io/octodemo/dotnet-razor-pages-movie"
 
 jobs:
-  provision-environment-for-qa:
+  qa-functional-UI-tests:
     permissions:
       actions: read
       id-token: write # This is required for requesting the JWT
       contents: read  # This is required for actions/checkout
       issues: write
 
-    
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04-16core
     environment: STAGE
     steps:
       - name: Checkout code
@@ -87,6 +86,13 @@ jobs:
           echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
           echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
 
+      - name: Run UI Automated Selenium Tests
+        run: |
+          dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
+        env:
+          BASE_URL: ${{ steps.capture_outputs.outputs.CONTAINER_APP_URL }}
+        
+
       # Open an issue and notify QA that the staging environment is ready for testing
       - name: Create Issue
         uses: actions/github-script@v7.0.1
@@ -123,39 +129,7 @@ jobs:
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
           ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
-  
-  # automated-ui-tests:
-  #   permissions:
-  #       actions: read
-  #       id-token: write # This is required for requesting the JWT
-  #       contents: read  # This is required for actions/checkout
-  #       issues: write
-  #     runs-on: ubuntu-latest
-  #     environment: STAGE
-  #     steps:
-  #       - name: Checkout code
-  #         uses: actions/checkout@v4.1.7
 
-  #       - name: Set environment variables
-  #         run: |
-  #           export SA_PASSWORD='YourStrong!Passw0rd'
-  #           export ConnectionStrings__RazorPagesMovieContext='Server=sqlserver,1433;Database=RazorPagesMovieContext;User ID=sa;Password=YourStrong!Passw0rd;'
-  #           export ASPNETCORE_URLS="http://0.0.0.0:5000"
-  #           export TAG="132"
-
-  #       - name: Run Docker Compose
-  #         run: docker compose up -d --build webapp
-
-  #       - name: Run UI acceptance tests
-  #         run: |
-  #           echo -e "\033[0;32mdotnet clean RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj\033[0m"
-  #           dotnet restore RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj
-
-  #           echo -e "\033[0;32mWaiting for the web application to start...\033[0m"
-  #           sleep 20
-
-  #           echo -e "\033[0;32mdotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger \"console;verbosity=detailed\"\033[0m"
-  #           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
 
   production:
     permissions:
@@ -167,7 +141,7 @@ jobs:
     environment: 
       name: PROD
       url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
-    needs: [provision-environment-for-qa]
+    needs: [qa-functional-UI-tests]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code

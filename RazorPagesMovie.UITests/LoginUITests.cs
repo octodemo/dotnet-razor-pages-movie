@@ -11,33 +11,44 @@ namespace RazorPagesMovie.Tests.UITests
     public class LoginUITests : IClassFixture<WebDriverFixture>
     {
         private readonly IWebDriver _driver;
-        private readonly string _url = "http://localhost/Account/Login";
+        private readonly string _url;
+        private readonly string _baseUrl;
+        private const string DEFAULT_HOST = "https://localhost";
+        private const int DEFAULT_PORT = 5001;
+        private const string LOGIN_PATH = "/Account/Login";
+        private static bool _hasLoggedBaseUrl = false;
 
         public LoginUITests(WebDriverFixture fixture)
         {
             _driver = fixture.Driver;
+            _baseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? $"{DEFAULT_HOST}:{DEFAULT_PORT}";
+            _url = $"{_baseUrl.TrimEnd('/')}{LOGIN_PATH}";
+            
+            if (!_hasLoggedBaseUrl)
+            {
+                Console.WriteLine($"Using base URL: {_baseUrl}");
+                _hasLoggedBaseUrl = true;
+            }
         }
 
         [Fact]
         public async Task Login_WithValidCredentials_ShouldRedirectToHomePage()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
             var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
-            // Use actual valid credentials
             usernameField.SendKeys("user");
             passwordField.SendKeys("password");
             loginButton.Click();
 
-            // Wait for the URL to change to the expected page
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(4));
-            wait.Until(d => d.Url == "http://localhost/Movies");
-
-            Assert.Equal("http://localhost/Movies", _driver.Url);
+            var expectedUrl = $"{_baseUrl}/Movies";
+            wait.Until(d => d.Url == expectedUrl);
+            
+            Assert.Equal(expectedUrl, _driver.Url);
         }
 
         [Fact]
