@@ -86,6 +86,9 @@ jobs:
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
           echo "HASH_URL=${HASH_URL}" >> $GITHUB_ENV
 
+      - name: Gather telemtery Data for UI Tests [STAGING] 📊
+        uses: catchpoint/workflow-telemetry-action@v2.0.0
+
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"

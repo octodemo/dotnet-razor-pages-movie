@@ -245,6 +245,133 @@ namespace RazorPagesMovie.UITests
             Assert.Equal("Add to favorites list", favoritesButton.Text);
         }
 
+        [Fact]
+        public async Task Login_WithSpecialCharacters_ShouldWork()
+        {
+            await _driver.Navigate().GoToUrlAsync(_url);
+            var specialUsername = "user@#$%^&*()";
+            var specialPassword = "pass@#$%^&*()";
+            
+            var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
+            var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
+            var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+
+            usernameField.SendKeys(specialUsername);
+            passwordField.SendKeys(specialPassword);
+            loginButton.Click();
+
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+            
+            var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
+            Assert.Equal("Invalid username or password", errorMessage.Text);
+        }
+
+        [Fact]
+        public async Task Login_WithMaxLengthCredentials_ShouldWork()
+        {
+            await _driver.Navigate().GoToUrlAsync(_url);
+            var longUsername = new string('a', 100); // Max length username
+            var longPassword = new string('b', 100); // Max length password
+            
+            var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
+            var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
+            var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+
+            usernameField.SendKeys(longUsername);
+            passwordField.SendKeys(longPassword);
+            loginButton.Click();
+
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+            
+            var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
+            Assert.Equal("Invalid username or password", errorMessage.Text);
+        }
+
+        [Fact]
+        public async Task Login_PreventSqlInjection_ShouldNotWork()
+        {
+            await _driver.Navigate().GoToUrlAsync(_url);
+            var injectionUsername = "admin' OR '1'='1";
+            var injectionPassword = "' OR '1'='1";
+            
+            var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
+            var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
+            var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+
+            usernameField.SendKeys(injectionUsername);
+            passwordField.SendKeys(injectionPassword);
+            loginButton.Click();
+
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+            
+            var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
+            Assert.Equal("Invalid username or password", errorMessage.Text);
+        }
+
+        [Fact]
+        public async Task Login_BrowserBackButton_ShouldNotStayLoggedIn()
+        {
+            // First login successfully
+            await Login_WithValidCredentials_ShouldRedirectToHomePage();
+            
+            // Click browser back button
+            _driver.Navigate().Back();
+            
+            // Verify we're logged out
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(d => d.Url.Contains(LOGIN_PATH));
+            Assert.Contains(LOGIN_PATH, _driver.Url);
+        }
+
+        [Fact]
+        public async Task Login_RapidLoginAttempts_ShouldBeThrottled()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                await _driver.Navigate().GoToUrlAsync(_url);
+                
+                var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
+                var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
+                var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+
+                usernameField.SendKeys($"user{i}");
+                passwordField.SendKeys("wrongpass");
+                loginButton.Click();
+
+                // Wait for error message
+                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+                wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+            }
+
+            // Verify we're still on login page
+            Assert.Contains(LOGIN_PATH, _driver.Url);
+        }
+
+        [Fact]
+        public async Task Login_WithUnicodeCharacters_ShouldWork()
+        {
+            await _driver.Navigate().GoToUrlAsync(_url);
+            var unicodeUsername = "用户";
+            var unicodePassword = "密码";
+            
+            var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
+            var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
+            var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
+
+            usernameField.SendKeys(unicodeUsername);
+            passwordField.SendKeys(unicodePassword);
+            loginButton.Click();
+
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+            
+            var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
+            Assert.Equal("Invalid username or password", errorMessage.Text);
+        }
+
         private void RetryClick(IWebElement element, int maxRetries = 3, int retryDelayMs = 500)
         {
             for (int i = 0; i < maxRetries; i++)

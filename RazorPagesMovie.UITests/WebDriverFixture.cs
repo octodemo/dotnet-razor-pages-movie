@@ -12,7 +12,7 @@ namespace RazorPagesMovie.UITests
         {
             var chromeOptions = new ChromeOptions();
             chromeOptions.AcceptInsecureCertificates = true; // Accept self-signed certificates
-            chromeOptions.AddArgument("--headless"); // Optional: Run Chrome headlessly for CI/CD
+            // chromeOptions.AddArgument("--headless"); // Optional: Run Chrome headlessly for CI/CD
             chromeOptions.AddArgument("--no-sandbox"); // Optional: Bypass any OS security checks
             // chromeOptions.AddArgument("--disable-dev-shm-usage"); // Optional: Overcome limited resource problems
             // chromeOptions.AddArgument("--disable-gpu"); // Optional: Disable GPU
