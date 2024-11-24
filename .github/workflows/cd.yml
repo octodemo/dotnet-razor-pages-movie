@@ -86,8 +86,18 @@ jobs:
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
           echo "HASH_URL=${HASH_URL}" >> $GITHUB_ENV
 
-      - name: Gather telemtery Data for UI Tests [STAGING] 📊
+      - name: Gather Telemetry Data for UI Tests [STAGING] 📊
         uses: catchpoint/workflow-telemetry-action@v2.0.0
+        with:
+          metric_frequency: "1"  # More frequent collection for UI tests
+          proc_trace_min_duration: "100"  # Trace processes taking >100ms
+          proc_trace_sys_enable: "true"  # Enable system process tracing
+          proc_trace_chart_show: "true"
+          proc_trace_chart_max_count: "200"  # Show more processes in chart
+          proc_trace_table_show: "true"  # Enable table view for detailed analysis
+          comment_on_pr: "true"
+          job_summary: "true"
+          theme: "dark"  # Better visibility on GitHub dark theme
 
       - name: Run UI Automated Selenium Tests
         run: |
