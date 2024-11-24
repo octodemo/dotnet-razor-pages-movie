@@ -5,6 +5,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace RazorPagesMovie.UITests
 {
@@ -190,7 +191,7 @@ namespace RazorPagesMovie.UITests
 
             // Click on a Movie card if necessary
             var movieCard = _driver.FindElement(By.CssSelector(".movie-card"));
-            movieCard.Click();
+            RetryClick(movieCard);
 
             // Wait for the links to become visible
             wait.Until(ExpectedConditions.ElementIsVisible(By.LinkText("Edit")));
@@ -225,7 +226,7 @@ namespace RazorPagesMovie.UITests
 
             // Click on a Movie card to reveal additional options
             movieCard = _driver.FindElement(By.CssSelector(".movie-card"));
-            movieCard.Click();
+            RetryClick(movieCard);
 
             // Wait for the "Add to favorites list" button to be visible
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//button[text()='Add to favorites list']")));
@@ -242,6 +243,24 @@ namespace RazorPagesMovie.UITests
 
             Assert.NotNull(favoritesButton);
             Assert.Equal("Add to favorites list", favoritesButton.Text);
+        }
+
+        private void RetryClick(IWebElement element, int maxRetries = 3, int retryDelayMs = 500)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    element.Click();
+                    return; // Click successful, exit the loop
+                }
+                catch (ElementClickInterceptedException)
+                {
+                    Thread.Sleep(retryDelayMs); // Wait before retrying
+                }
+            }
+            // If all retries fail, re-throw the exception
+            throw new ElementClickInterceptedException("Element click intercepted after multiple retries.");
         }
     }
 }
