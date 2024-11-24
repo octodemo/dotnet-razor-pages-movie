@@ -82,9 +82,8 @@ jobs:
       - name: Generate Artifact URL
         id: generate_artifact_url
         run: |
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state") | .id')
-          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
-          echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
+          ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state") | .archive_download_url')
+          echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
 
       - name: Run UI Automated Selenium Tests
         run: |
@@ -111,7 +110,6 @@ jobs:
             - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
             - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
             - **Terraform IaC files:**
-              - **Artifact ID:** \`${process.env.ARTIFACT_ID}\`
               - **Artifact URL:** [📁 Download](${process.env.ARTIFACT_URL})
             `;
             
@@ -127,7 +125,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
-          ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
 
 
   production:
@@ -175,13 +172,6 @@ jobs:
           name: terraform-state-prod
           path: ./terraform/production/
 
-      - name: Generate Artifact URL
-        id: generate_artifact_url
-        run: |
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state-prod") | .id')
-          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
-          echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
-      
       - name: Capture Terraform Output
         id: output
         run: echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
@@ -199,8 +189,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
-          ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
-          ARTIFACT_URL: ${{ env.ARTIFACT_URL }}
 
         with:
           tag: ${{ inputs.image_tag }}
