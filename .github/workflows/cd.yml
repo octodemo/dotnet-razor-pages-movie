@@ -79,11 +79,12 @@ jobs:
           name: terraform-state
           path: ./terraform/staging/
 
-      - name: Generate Artifact URL
-        id: generate_artifact_url
+      - name: Generate URL at commit hash to IaC staging files
+        id: generate_url
         run: |
-          ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state") | .archive_download_url')
-          echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
+          # generate url to URL at commit hash to the terraform/staging directory.
+          HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
+          echo "HASH_URL=${HASH_URL}" >> $GITHUB_ENV
 
       - name: Run UI Automated Selenium Tests
         run: |
@@ -110,7 +111,7 @@ jobs:
             - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
             - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
             - **Terraform IaC files:**
-              - **Artifact URL:** [📁 Download](${process.env.ARTIFACT_URL})
+              - **Terraform Files at Commit Hash:** 🛠️ [Commit SHA](${process.env.HASH_URL})
             `;
             
             github.rest.issues.create({
@@ -125,6 +126,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
+          HASH_URL: ${{ env.HASH_URL }}
 
 
   production:
