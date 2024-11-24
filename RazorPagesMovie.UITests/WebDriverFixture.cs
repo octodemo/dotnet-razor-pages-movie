@@ -2,7 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 
-namespace RazorPagesMovie.Tests.UITests
+namespace RazorPagesMovie.UITests
 {
     public class WebDriverFixture : IDisposable
     {

@@ -33,6 +33,12 @@ namespace RazorPagesMovie.Pages.Movies
                 return NotFound();
             }
 
+            // Check if user is authenticated first
+            if (User?.Identity?.Name == null)
+            {
+                return NotFound();
+            }
+
             var user = await _context.Users
                 .Include(u => u.Movies)
                 .FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
@@ -58,6 +64,12 @@ namespace RazorPagesMovie.Pages.Movies
             Movie = await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Movie == null)
+            {
+                return NotFound();
+            }
+
+            // Check if user is authenticated first
+            if (User?.Identity?.Name == null)
             {
                 return NotFound();
             }

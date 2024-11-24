@@ -6,7 +6,7 @@ using SeleniumExtras.WaitHelpers;
 using System;
 using System.Threading.Tasks;
 
-namespace RazorPagesMovie.Tests.UITests
+namespace RazorPagesMovie.UITests
 {
     public class LoginUITests : IClassFixture<WebDriverFixture>
     {
