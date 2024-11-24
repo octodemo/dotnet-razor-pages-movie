@@ -81,10 +81,10 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.sln
+      run: dotnet restore RazorPagesMovie.csproj
 
     - name: Build App project
-      run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
+      run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
 
     - name: Set runtime
       id: set-runtime
