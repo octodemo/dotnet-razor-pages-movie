@@ -201,8 +201,7 @@ jobs:
     outputs:
       image_tag: ${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
     needs: [build, test] # depend on the build job to get the published app artifact
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' # run this job only when the branch is main or develop branch and not on pull requests or other branches - https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#github-context
-    # permissions for write acces to the packages and id-token and push access to the repository to create the container registry token
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'develop' # only run on pull requests from main to develop branch
     permissions:
       packages: write
       id-token: write
