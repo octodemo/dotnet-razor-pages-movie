@@ -133,7 +133,7 @@ jobs:
       id: split-test
       uses: scruplelesswizard/split-tests@4f1ca766cb93923ca216e02f1aefed20944e313f
       with:
-        glob: RazorPagesMovie.Tests/**/*Tests.cs
+        glob: tests/RazorPagesMovie.Tests/**/*Tests.cs
         split-total: ${{ env.total-runners }}
         split-index: ${{ matrix.index }}
         line-count: true
@@ -146,7 +146,6 @@ jobs:
       id: convert-path
       run: |
         test_suite="${{ steps.split-test.outputs.test-suite }}"
-        echo "test_suite=$test_suite"
         fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g')
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
       working-directory: tests
