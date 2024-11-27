@@ -72,23 +72,24 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
-      run: dotnet restore RazorPagesMovie.csproj
+      run: dotnet restore RazorPagesMovie.sln
 
     - name: Build App project
-      run: dotnet build RazorPagesMovie.csproj --configuration Release --no-restore
+      run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
 
     - name: Set runtime
       id: set-runtime
       run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
 
     - name: Publish
-      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output ./publish --self-contained --runtime ${{ env.RUNTIME }}
+      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime ${{ env.RUNTIME }}
+      working-directory: src
 
     - name: Upload published app
       uses: actions/upload-artifact@v4.4.3
       with:
         name: razor-linux-arm64
-        path: publish/
+        path: src/publish/
 
   test:
     runs-on: ${{ matrix.os }}
@@ -139,28 +140,32 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
+      working-directory: tests
 
     - name: Convert Test File Path to Fully Qualified Name
       id: convert-path
       run: |
         test_suite="${{ steps.split-test.outputs.test-suite }}"
+        echo "test_suite=$test_suite"
         fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g')
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
-    
+      working-directory: tests
+
     - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
     - run: |
         dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj \
           --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" \
           --logger "console;verbosity=detailed" \
-          --logger "trx;LogFileName=./testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" \
-          --results-directory ./testresults
+          --logger "trx;LogFileName=testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" \
+          --results-directory testresults
+      working-directory: tests
     
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4.3.6
       with:
         name: testresults-${{ github.run_id }}-split-${{ matrix.index }}
-        path: ./testresults
+        path: tests/testresults/
         if-no-files-found: warn
         compression-level: 6
 

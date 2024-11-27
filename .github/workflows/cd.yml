@@ -96,7 +96,7 @@ jobs:
           proc_trace_chart_show: "true"
           proc_trace_chart_max_count: "200"  # Show more processes in chart
           proc_trace_table_show: "true"  # Enable table view for detailed analysis
-          comment_on_pr: "true"
+          comment_on_pr: "false"
           job_summary: "true"
           theme: "dark"  # Better visibility on GitHub dark theme
 

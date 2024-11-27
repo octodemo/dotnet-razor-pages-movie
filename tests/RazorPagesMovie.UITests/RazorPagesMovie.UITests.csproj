@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,10 +17,10 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="131.0.6778.6900" />
     <PackageReference Include="Selenium.Support" Version="4.26.1" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\RazorPagesMovie.csproj" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
