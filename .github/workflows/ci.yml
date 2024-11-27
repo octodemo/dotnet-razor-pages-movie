@@ -147,7 +147,7 @@ jobs:
       run: |
         test_suite="${{ steps.split-test.outputs.test-suite }}"
         echo "test_suite=$test_suite"
-        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g' | xargs)
+        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g' | sed 's/^tests\.//g' | xargs)
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
       working-directory: tests
 
