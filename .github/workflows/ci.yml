@@ -147,12 +147,13 @@ jobs:
       run: |
         test_suite="${{ steps.split-test.outputs.test-suite }}"
         echo "test_suite=$test_suite"
-        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g')
+        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g' | xargs)
         echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
       working-directory: tests
 
-    - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}."'
+    - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}"'
     - run: 'echo "Fully qualified name: ${{ env.fully_qualified_name }}"'
+
     - run: |
         dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj \
           --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" \
