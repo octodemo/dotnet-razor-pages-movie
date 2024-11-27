@@ -36,6 +36,7 @@ variable "container_registry" {
 variable "image_tag" {
   description = "The image tag"
   type        = string
+  default     = "latest"
 }
 
 variable "sql_server_id" {
