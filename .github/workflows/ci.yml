@@ -52,11 +52,21 @@ jobs:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest]
-        language: [csharp]
+        include:
+        - language: csharp
+          build-mode: manual
+        - language: javascript-typescript
+          build-mode: none
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4.2.2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4.0.1
@@ -71,10 +81,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
 
+    
     - name: Restore dependencies
+      if: matrix.build-mode == 'manual'
       run: dotnet restore RazorPagesMovie.sln
 
     - name: Build App project
+      if: matrix.build-mode == 'manual'
       run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
 
     - name: Set runtime
@@ -82,14 +95,21 @@ jobs:
       run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
 
     - name: Publish
+      if: matrix.build-mode == 'manual'
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime ${{ env.RUNTIME }}
       working-directory: src
 
     - name: Upload published app
+      if: matrix.build-mode == 'manual'
       uses: actions/upload-artifact@v4.4.3
       with:
         name: razor-linux-arm64
         path: src/publish/
+      
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
 
   test:
     runs-on: ${{ matrix.os }}
