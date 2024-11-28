@@ -15,8 +15,16 @@ on:
         description: 'Run the pipeline with debug deployment enabled'
         required: false
         default: 'false'
-
-  # running on pull requests to main and develop branches
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/README.md'
+      - '.devcontainer/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/workflows/housekeeping*.yml'
+  
   pull_request:
     branches:
       - main
