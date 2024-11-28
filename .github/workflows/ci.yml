@@ -39,7 +39,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     name: Build (${{ matrix.language }})
     permissions:
       actions: read
@@ -53,8 +53,10 @@ jobs:
         include:
         - language: csharp
           build-mode: manual
+          runner: tsvi-linux8cores
         - language: javascript-typescript
           build-mode: none
+          runner: ubuntu-latest
 
     steps:
     - name: Checkout code
