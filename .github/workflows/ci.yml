@@ -39,8 +39,8 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    name: Build ${{ matrix.os }} - ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    name: Build (${{ matrix.language }})
     permissions:
       actions: read
       contents: read
@@ -50,11 +50,11 @@ jobs:
     
     strategy:
       matrix:
-        # os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest]
         include:
-        - language: [csharp, javascript-typescript]
-          build-mode: [manual, none]
+        - language: csharp
+          build-mode: manual
+        - language: javascript-typescript
+          build-mode: none
 
     steps:
     - name: Checkout code
@@ -89,14 +89,14 @@ jobs:
       if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
 
-    - name: Set runtime
-      if: matrix.language == 'csharp'
-      id: set-runtime
-      run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
+    # - name: Set runtime
+    #   if: matrix.language == 'csharp'
+    #   id: set-runtime
+      # run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
 
     - name: Publish
       if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
-      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime ${{ env.RUNTIME }}
+      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime linux-x64
       working-directory: src
 
     - name: Upload published app
