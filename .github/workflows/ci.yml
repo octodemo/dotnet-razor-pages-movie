@@ -25,7 +25,7 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/workflows/housekeeping*.yml'
   
-  pull_request:
+  pull_request_target:
     branches:
       - main
       - develop
