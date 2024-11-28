@@ -40,7 +40,7 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    name: Build ${{ matrix.os }}
+    name: Build ${{ matrix.os }} - ${{ matrix.language }}
     permissions:
       actions: read
       contents: read
@@ -74,6 +74,7 @@ jobs:
         dotnet-version: '6.0.x'
     
     - name: Cache NuGet packages
+      if: matrix.build-mode == 'manual'
       uses: actions/cache@v4.0.2
       with:
         path: ~/.nuget/packages
@@ -83,24 +84,25 @@ jobs:
 
     
     - name: Restore dependencies
-      if: matrix.build-mode == 'manual'
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       run: dotnet restore RazorPagesMovie.sln
 
     - name: Build App project
-      if: matrix.build-mode == 'manual'
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
 
     - name: Set runtime
+      if: matrix.language == 'csharp'
       id: set-runtime
       run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
 
     - name: Publish
-      if: matrix.build-mode == 'manual'
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime ${{ env.RUNTIME }}
       working-directory: src
 
     - name: Upload published app
-      if: matrix.build-mode == 'manual'
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       uses: actions/upload-artifact@v4.4.3
       with:
         name: razor-linux-arm64
