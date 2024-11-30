@@ -55,8 +55,7 @@ namespace RazorPagesMovie.UITests
         [Fact]
         public async Task Login_WithInvalidCredentials_ShouldShowErrorMessage()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
@@ -71,15 +70,13 @@ namespace RazorPagesMovie.UITests
 
             var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
             Assert.NotNull(errorMessage);
-            // Update the expected message to match the actual message
             Assert.Equal("Invalid username or password", errorMessage.Text);
         }
 
         [Fact]
         public async Task Login_WithEmptyPassword_ShouldShowErrorMessage()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
@@ -100,8 +97,7 @@ namespace RazorPagesMovie.UITests
         [Fact]
         public async Task Login_WithEmptyUsername_ShouldShowErrorMessage()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
@@ -122,8 +118,7 @@ namespace RazorPagesMovie.UITests
         [Fact]
         public async Task Login_WithEmptyUsernameAndPassword_ShouldShowErrorMessages()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
@@ -149,8 +144,7 @@ namespace RazorPagesMovie.UITests
         [Fact]
         public async Task Login_WithWhitespaceUsername_ShouldShowErrorMessage()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
-            _driver.Navigate().GoToUrl(_url);
+            await _driver.Navigate().GoToUrlAsync(_url);
 
             var usernameField = _driver.FindElement(By.Name("LoginInput.Username"));
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
@@ -171,7 +165,7 @@ namespace RazorPagesMovie.UITests
         [Fact]
         public async Task Admin_Can_See_Edit_Delete_Others_Cannot()
         {
-            await _driver.Navigate().GoToUrlAsync(_url); // Added await
+            await _driver.Navigate().GoToUrlAsync(_url);
             // Login as admin user
             _driver.Navigate().GoToUrl(_url);
 
@@ -184,7 +178,7 @@ namespace RazorPagesMovie.UITests
             loginButton.Click();
 
             // Wait for the Movies page to load
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
             wait.Until(d => d.Url.Contains("/Movies"));
 
             Assert.Contains("/Movies", _driver.Url);

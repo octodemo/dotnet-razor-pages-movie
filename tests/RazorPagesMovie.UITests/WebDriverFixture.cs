@@ -1,5 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Edge;
 using System;
 
 namespace RazorPagesMovie.UITests
@@ -10,15 +12,43 @@ namespace RazorPagesMovie.UITests
 
         public WebDriverFixture()
         {
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AcceptInsecureCertificates = true; // Accept self-signed certificates
-            chromeOptions.AddArgument("--headless"); // Optional: Run Chrome headlessly for CI/CD
-            chromeOptions.AddArgument("--no-sandbox"); // Optional: Bypass any OS security checks
-            // chromeOptions.AddArgument("--disable-dev-shm-usage"); // Optional: Overcome limited resource problems
-            // chromeOptions.AddArgument("--disable-gpu"); // Optional: Disable GPU
-            // chromeOptions.AddArgument("--window-size=1920,1080"); // Optional: Set window size
-            Driver = new ChromeDriver(chromeOptions);
-            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(4); // Set implicit wait
+            string browser = Environment.GetEnvironmentVariable("BROWSER") ?? "chrome";
+
+            switch (browser.ToLower())
+            {
+                case "firefox":
+                    var firefoxOptions = new FirefoxOptions();
+                    firefoxOptions.AcceptInsecureCertificates = true;
+                    firefoxOptions.AddArgument("--headless");
+                    Driver = new FirefoxDriver(firefoxOptions);
+                    break;
+
+                case "edge":
+                    var edgeOptions = new EdgeOptions();
+                    edgeOptions.AcceptInsecureCertificates = true;
+                    edgeOptions.AddArgument("--headless");
+                    Driver = new EdgeDriver(edgeOptions);
+                    break;
+
+                case "chromium":
+                    var chromiumOptions = new ChromeOptions();
+                    chromiumOptions.AcceptInsecureCertificates = true;
+                    chromiumOptions.AddArgument("--headless");
+                    chromiumOptions.AddArgument("--no-sandbox");
+                    Driver = new ChromeDriver(chromiumOptions);
+                    break;
+
+                case "chrome":
+                default:
+                    var chromeOptions = new ChromeOptions();
+                    chromeOptions.AcceptInsecureCertificates = true;
+                    chromeOptions.AddArgument("--headless");
+                    chromeOptions.AddArgument("--no-sandbox");
+                    Driver = new ChromeDriver(chromeOptions);
+                    break;
+            }
+
+            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(4);
         }
 
         public void Dispose()

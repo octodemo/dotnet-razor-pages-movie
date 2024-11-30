@@ -21,20 +21,19 @@ on:
         required: false
         type: string
         default: 'false'
+
 env:
   RESOURCE_GROUP: "tsvi-rg"
   CONTAINER_REGISTRY: "ghcr.io/octodemo/dotnet-razor-pages-movie"
 
 jobs:
-  qa-functional-UI-tests:
+  setup-staging-environment:
     permissions:
       actions: read
-      id-token: write # This is required for requesting the JWT
-      contents: read  # This is required for actions/checkout
-      issues: write
-      pull-requests: write
+      id-token: write
+      contents: read
 
-    runs-on: tsvi-linux8cores
+    runs-on: ubuntu-latest
     environment: STAGE
     steps:
       - name: Checkout code
@@ -74,40 +73,54 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
-      - name: Upload Teraaform State and files
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: terraform-state
-          path: ./terraform/staging/
-
       - name: Generate URL at commit hash to IaC staging files
         id: generate_url
         run: |
-          # generate url to URL at commit hash to the terraform/staging directory.
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
           echo "HASH_URL=${HASH_URL}" >> $GITHUB_ENV
 
-      - name: Gather Telemetry Data for UI Tests [STAGING] 📊
-        uses: catchpoint/workflow-telemetry-action@v2.0.0
+  run-ui-tests:
+    needs: setup-staging-environment
+    permissions:
+      actions: read
+      contents: read
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+        browser: [chrome, firefox, edge, chromium]
+
+    runs-on: ${{ matrix.os }}
+    env:
+      BROWSER: ${{ matrix.browser }}
+      BASE_URL: "https://${{ env.CONTAINER_APP_URL }}"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.1
         with:
-          metric_frequency: "1"  # More frequent collection for UI tests
-          proc_trace_min_duration: "100"  # Trace processes taking >100ms
-          proc_trace_sys_enable: "true"  # Enable system process tracing
-          proc_trace_chart_show: "true"
-          proc_trace_chart_max_count: "200"  # Show more processes in chart
-          proc_trace_table_show: "true"  # Enable table view for detailed analysis
-          comment_on_pr: "false"
-          job_summary: "true"
-          theme: "dark"  # Better visibility on GitHub dark theme
+          dotnet-version: '6.0.x'
 
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
-        env:
-          BASE_URL: "https://${{ env.CONTAINER_APP_URL }}"
-        working-directory: tests
 
-      # Open an issue and notify QA that the staging environment is ready for testing
+  create-qa-ticket:
+    needs: run-ui-tests
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
       - name: Create Issue
         uses: actions/github-script@v7.0.1
         with:
@@ -143,7 +156,6 @@ jobs:
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
           HASH_URL: ${{ env.HASH_URL }}
 
-
   production:
     permissions:
       actions: read
@@ -154,7 +166,7 @@ jobs:
     environment: 
       name: PROD
       url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
-    needs: [qa-functional-UI-tests]
+    needs: [create-qa-ticket]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
