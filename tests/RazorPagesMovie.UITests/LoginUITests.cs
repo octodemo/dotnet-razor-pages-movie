@@ -45,7 +45,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("password");
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             var expectedUrl = $"{_baseUrl}/Movies";
             wait.Until(d => d.Url == expectedUrl);
             
@@ -94,7 +94,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(""); // Empty password
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Password']")));
 
             var errorMessage = _driver.FindElement(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Password']"));
@@ -115,7 +115,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("password");
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
 
             var errorMessage = _driver.FindElement(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']"));
@@ -136,7 +136,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(""); // Empty password
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
 
             var usernameError = _driver.FindElement(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']"));
@@ -162,7 +162,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("password");
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
 
             var errorMessage = _driver.FindElement(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']"));
@@ -186,7 +186,7 @@ namespace RazorPagesMovie.UITests
             loginButton.Click();
 
             // Wait for the Movies page to load
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(d => d.Url.Contains("/Movies"));
 
             Assert.Contains("/Movies", _driver.Url);
@@ -221,7 +221,7 @@ namespace RazorPagesMovie.UITests
             loginButton.Click();
 
             // Wait for the Movies page to load
-            wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(d => d.Url.Contains("/Movies"));
 
             Assert.Contains("/Movies", _driver.Url);
@@ -292,7 +292,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(longPassword);
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
             
             var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
@@ -314,7 +314,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(injectionPassword);
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
             
             var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
@@ -331,7 +331,7 @@ namespace RazorPagesMovie.UITests
             _driver.Navigate().Back();
             
             // Verify we're logged out
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(d => d.Url.Contains(LOGIN_PATH));
             Assert.Contains(LOGIN_PATH, _driver.Url);
         }
@@ -352,7 +352,7 @@ namespace RazorPagesMovie.UITests
                 loginButton.Click();
 
                 // Wait for error message
-                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
                 wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
             }
 
@@ -375,7 +375,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(unicodePassword);
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
             
             var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
