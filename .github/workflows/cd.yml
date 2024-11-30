@@ -73,6 +73,12 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
+      - name: Upload Terraform State and files
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: terraform-state
+          path: ./terraform/staging/
+
       - name: Generate URL at commit hash to IaC staging files
         id: generate_url
         run: |
@@ -91,9 +97,6 @@ jobs:
         browser: [chrome, firefox, edge, chromium]
 
     runs-on: ${{ matrix.os }}
-    env:
-      BROWSER: ${{ matrix.browser }}
-      BASE_URL: "https://${{ env.CONTAINER_APP_URL }}"
 
     steps:
       - name: Checkout code
@@ -107,6 +110,10 @@ jobs:
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
+        working-directory: tests
+        env:
+          BROWSER: ${{ matrix.browser }}
+          BASE_URL: "https://${{ env.CONTAINER_APP_URL }}"
 
   create-qa-ticket:
     needs: run-ui-tests
@@ -159,8 +166,8 @@ jobs:
   production:
     permissions:
       actions: read
-      id-token: write # This is required for requesting the JWT
-      contents: write  # This is required for actions/checkout and the create-release action
+      id-token: write
+      contents: write
     
     runs-on: ubuntu-latest
     environment: 
