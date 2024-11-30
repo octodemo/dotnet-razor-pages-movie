@@ -34,6 +34,9 @@ jobs:
       contents: read
 
     runs-on: ubuntu-latest
+    outputs:
+      CONTAINER_APP_URL: ${{ steps.capture_outputs.outputs.CONTAINER_APP_URL }}
+      HASH_URL: ${{ steps.generate_url.outputs.HASH_URL }}
     environment: STAGE
     steps:
       - name: Checkout code
@@ -65,7 +68,7 @@ jobs:
       - name: Capture Terraform Outputs
         id: capture_outputs
         run: |
-          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
+          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_OUTPUT
         working-directory: ./terraform/staging
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -73,17 +76,11 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
-      - name: Upload Terraform State and files
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: terraform-state
-          path: ./terraform/staging/
-
       - name: Generate URL at commit hash to IaC staging files
         id: generate_url
         run: |
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
-          echo "HASH_URL=${HASH_URL}" >> $GITHUB_ENV
+          echo "HASH_URL=${HASH_URL}" >> $GITHUB_OUTPUT
 
   run-ui-tests:
     needs: setup-staging-environment
@@ -113,7 +110,7 @@ jobs:
         working-directory: tests
         env:
           BROWSER: ${{ matrix.browser }}
-          BASE_URL: "https://${{ env.CONTAINER_APP_URL }}"
+          BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
 
   create-qa-ticket:
     needs: run-ui-tests
