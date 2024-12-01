@@ -15,7 +15,8 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddMvcOptions(options => options.Filters.Add(new IgnoreAntiforgeryTokenAttribute()));
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -30,7 +31,7 @@ builder.Services.AddDataProtection()
     .SetApplicationName("RazorPagesMovie")
     .UseEphemeralDataProtectionProvider();
 
-// Disable anti-forgery token validation globally
+// Disable anti-forgery token validation globally for controllers/views (if needed)
 builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute()));
 
