@@ -13,42 +13,54 @@ namespace RazorPagesMovie.UITests
         public WebDriverFixture()
         {
             string browser = Environment.GetEnvironmentVariable("BROWSER") ?? "chrome";
+            var options = GetOptions(browser); // Centralized options
 
+            switch (browser.ToLower())
+            {
+                case "firefox":
+                    Driver = new FirefoxDriver(options as FirefoxOptions);
+                    break;
+
+                case "edge":
+                    Driver = new EdgeDriver(options as EdgeOptions);
+                    break;
+
+                case "chromium":
+                case "chrome":
+                default:
+                    Driver = new ChromeDriver(options as ChromeOptions);
+                    break;
+            }
+
+            // Remove implicit wait - rely on explicit waits in tests
+            // Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(4); 
+        }
+
+        private DriverOptions GetOptions(string browser)
+        {
             switch (browser.ToLower())
             {
                 case "firefox":
                     var firefoxOptions = new FirefoxOptions();
                     firefoxOptions.AcceptInsecureCertificates = true;
                     firefoxOptions.AddArgument("--headless");
-                    Driver = new FirefoxDriver(firefoxOptions);
-                    break;
+                    return firefoxOptions;
 
                 case "edge":
                     var edgeOptions = new EdgeOptions();
                     edgeOptions.AcceptInsecureCertificates = true;
                     edgeOptions.AddArgument("--headless");
-                    Driver = new EdgeDriver(edgeOptions);
-                    break;
+                    return edgeOptions;
 
                 case "chromium":
-                    var chromiumOptions = new ChromeOptions();
-                    chromiumOptions.AcceptInsecureCertificates = true;
-                    chromiumOptions.AddArgument("--headless");
-                    chromiumOptions.AddArgument("--no-sandbox");
-                    Driver = new ChromeDriver(chromiumOptions);
-                    break;
-
                 case "chrome":
                 default:
                     var chromeOptions = new ChromeOptions();
                     chromeOptions.AcceptInsecureCertificates = true;
                     chromeOptions.AddArgument("--headless");
-                    chromeOptions.AddArgument("--no-sandbox");
-                    Driver = new ChromeDriver(chromeOptions);
-                    break;
+                    chromeOptions.AddArgument("--no-sandbox"); // Added for consistency
+                    return chromeOptions;
             }
-
-            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(4);
         }
 
         public void Dispose()

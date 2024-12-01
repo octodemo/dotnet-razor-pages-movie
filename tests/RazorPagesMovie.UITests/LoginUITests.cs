@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace RazorPagesMovie.UITests
 {
-    public class LoginUITests : IClassFixture<WebDriverFixture>
+    public class LoginUITests : IClassFixture<WebDriverFixture>, IAsyncLifetime
     {
         private readonly IWebDriver _driver;
         private readonly string _url;
@@ -30,6 +30,19 @@ namespace RazorPagesMovie.UITests
                 Console.WriteLine($"Using base URL: {_baseUrl}");
                 _hasLoggedBaseUrl = true;
             }
+        }
+
+        public Task InitializeAsync()
+        {
+            // Asynchronous setup logic here (if needed)
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
+        {
+            // Asynchronous cleanup logic here
+            _driver.Manage().Cookies.DeleteAllCookies();
+            // ... other cleanup ...
         }
 
         [Fact]
