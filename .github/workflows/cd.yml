@@ -92,6 +92,8 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
         browser: [chrome, firefox, edge, chromium]
+        user: [user1, user2, user3, user4, user5, user6, user7, user8]
+        admin_user: [admin1, admin2, admin3, admin4, admin5, admin6, admin7, admin8]
 
     runs-on: ${{ matrix.os }}
 
@@ -111,6 +113,8 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
+          TEST_USER: ${{ matrix.user }}
+          TEST_ADMIN_USER: ${{ matrix.admin_user }}
 
   create-qa-ticket:
     needs: ui-tests

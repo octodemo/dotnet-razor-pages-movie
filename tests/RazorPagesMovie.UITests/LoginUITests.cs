@@ -18,12 +18,20 @@ namespace RazorPagesMovie.UITests
         private const int DEFAULT_PORT = 5001;
         private const string LOGIN_PATH = "/Account/Login";
         private static bool _hasLoggedBaseUrl = false;
+        private readonly string _testUser;
+        private readonly string _testPassword;
+        private readonly string _testAdminUser;
+        private readonly string _testAdminPassword;
 
         public LoginUITests(WebDriverFixture fixture)
         {
             _driver = fixture.Driver;
             _baseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? $"{DEFAULT_HOST}:{DEFAULT_PORT}";
             _url = $"{_baseUrl.TrimEnd('/')}{LOGIN_PATH}";
+            _testUser = Environment.GetEnvironmentVariable("TEST_USER") ?? "user";
+            _testAdminUser = Environment.GetEnvironmentVariable("TEST_ADMIN_USER") ?? "admin";
+            _testPassword = Environment.GetEnvironmentVariable("TEST_PASSWORD") ?? "password";
+            _testAdminPassword = Environment.GetEnvironmentVariable("TEST_ADMIN_PASSWORD") ?? "password";
             
             if (!_hasLoggedBaseUrl)
             {
@@ -41,8 +49,8 @@ namespace RazorPagesMovie.UITests
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
             var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
-            usernameField.SendKeys("user");
-            passwordField.SendKeys("password");
+            usernameField.SendKeys(_testUser);
+            passwordField.SendKeys(_testPassword);
             loginButton.Click();
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
@@ -179,8 +187,8 @@ namespace RazorPagesMovie.UITests
             var passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
             var loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
-            usernameField.SendKeys("admin"); // Use actual admin username
-            passwordField.SendKeys("password"); // Use actual admin password
+            usernameField.SendKeys(_testAdminUser); // Use actual admin username
+            passwordField.SendKeys(_testAdminPassword); // Use actual admin password
             loginButton.Click();
 
             // Wait for the Movies page to load
@@ -214,8 +222,8 @@ namespace RazorPagesMovie.UITests
             passwordField = _driver.FindElement(By.Name("LoginInput.Password"));
             loginButton = _driver.FindElement(By.CssSelector("button[type='submit']"));
 
-            usernameField.SendKeys("user"); // Use actual regular user username
-            passwordField.SendKeys("password"); // Use actual regular user password
+            usernameField.SendKeys(_testUser); // Use actual regular user username
+            passwordField.SendKeys(_testPassword); // Use actual regular user password
             loginButton.Click();
 
             // Wait for the Movies page to load
