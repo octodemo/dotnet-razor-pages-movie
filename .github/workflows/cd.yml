@@ -82,7 +82,7 @@ jobs:
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
           echo "HASH_URL=${HASH_URL}" >> $GITHUB_OUTPUT
 
-  run-ui-tests:
+  ui-tests:
     needs: setup-staging-environment
     permissions:
       actions: read
@@ -113,7 +113,7 @@ jobs:
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
 
   create-qa-ticket:
-    needs: run-ui-tests
+    needs: ui-tests
     permissions:
       actions: read
       contents: read

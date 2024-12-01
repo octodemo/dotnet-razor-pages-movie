@@ -50,7 +50,7 @@
       backToTop.classList.remove('show');
     }
   });
-
+/*
   // Add modal popup with less intrusive behavior
   if (!localStorage.getItem('hideWelcomePopup')) {
     const modal = document.createElement('div');
@@ -74,7 +74,7 @@
     });
     setTimeout(() => modal.style.display = 'flex', 5000); // Show after 5 seconds
   }
-
+*/
   // Add scroll progress bar
   const scrollProgress = document.createElement('div');
   scrollProgress.id = 'scrollProgress';
