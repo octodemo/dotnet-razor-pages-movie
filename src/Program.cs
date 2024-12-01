@@ -5,6 +5,7 @@ using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,41 +20,15 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
 
-// Configure Data Protection to use ephemeral keys
+// Configure Data Protection to use a file-based key store
 builder.Services.AddDataProtection()
     .SetApplicationName("RazorPagesMovie")
-    .UseEphemeralDataProtectionProvider();
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys")));
 
 var app = builder.Build();
 
-// Update database initialization with error handling
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try 
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        var context = services.GetRequiredService<RazorPagesMovieContext>();
-        
-        logger.LogInformation("Starting database migration");
-        context.Database.Migrate();
-        
-        logger.LogInformation("Starting data seeding");
-        SeedData.Initialize(services);
-        
-        logger.LogInformation("Database initialization completed");
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating/seeding the database.");
-        throw;
-    }
-}
-
+// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -62,10 +37,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
@@ -80,6 +58,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
 app.MapRazorPages();
 
 app.Run();
@@ -89,82 +68,4 @@ using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-
-builder.Services.AddRazorPages();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
-
-// Configure Data Protection to use ephemeral keys
-builder.Services.AddDataProtection()
-    .SetApplicationName("RazorPagesMovie")
-    .UseEphemeralDataProtectionProvider();
-
-var app = builder.Build();
-
-// Update database initialization with error handling
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try 
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        var context = services.GetRequiredService<RazorPagesMovieContext>();
-        
-        logger.LogInformation("Starting database migration");
-        context.Database.Migrate();
-        
-        logger.LogInformation("Starting data seeding");
-        SeedData.Initialize(services);
-        
-        logger.LogInformation("Database initialization completed");
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating/seeding the database.");
-        throw;
-    }
-}
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseSession();
-app.Use(async (context, next) =>
-{
-    var path = context.Request.Path;
-    var isAccountPage = path.StartsWithSegments("/Account");
-    var isAuthenticated = context.Session.GetInt32("UserId").HasValue;
-
-    if (!isAuthenticated && !isAccountPage && !path.StartsWithSegments("/Index"))
-    {
-        context.Response.Redirect("/Account/Login");
-        return;
-    }
-
-    await next();
-});
-app.MapRazorPages();
-
-app.Run();
 #endif
