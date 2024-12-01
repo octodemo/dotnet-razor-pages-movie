@@ -65,9 +65,9 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("invalidPassword");
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20)); // Increased timeout
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             try
             {
                 wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
@@ -96,7 +96,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(""); // Empty password
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Password']")));
@@ -119,7 +119,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("password");
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
@@ -142,7 +142,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(""); // Empty password
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
@@ -170,7 +170,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("password");
             loginButton.Click();
             
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("span.text-danger.field-validation-error[data-valmsg-for='LoginInput.Username']")));
@@ -223,7 +223,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(specialPassword);
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20)); // Increased timeout
             try
@@ -255,7 +255,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(longPassword);
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
@@ -279,7 +279,7 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys(injectionPassword);
             loginButton.Click();
 
-            Thread.Sleep(5000); // Added sleep to see the error message
+            Thread.Sleep(3000); // Replace with explicit wait
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
@@ -294,7 +294,7 @@ namespace RazorPagesMovie.UITests
             // First login successfully
             await Login_WithValidCredentials_ShouldRedirectToHomePage();
             
-            Thread.Sleep(5000);
+            Thread.Sleep(3000); // Replace with explicit wait
 
             // Click browser back button
             _driver.Navigate().Back();
@@ -320,7 +320,7 @@ namespace RazorPagesMovie.UITests
                 passwordField.SendKeys("wrongpass");
                 loginButton.Click();
 
-                Thread.Sleep(5000);
+                Thread.Sleep(3000); // Replace with explicit wait
 
                 // Wait for error message
                 var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
@@ -345,8 +345,6 @@ namespace RazorPagesMovie.UITests
             usernameField.SendKeys(unicodeUsername);
             passwordField.SendKeys(unicodePassword);
             loginButton.Click();
-
-            Thread.Sleep(5000); // Added sleep to see the error message
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
