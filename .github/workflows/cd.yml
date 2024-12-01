@@ -92,8 +92,6 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
         browser: [chrome, firefox, edge, chromium]
-        user: [user1, user2, user3, user4, user5, user6, user7, user8]
-        admin_user: [admin1, admin2, admin3, admin4, admin5, admin6, admin7, admin8]
 
     runs-on: ${{ matrix.os }}
 
@@ -106,6 +104,18 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      - name: Set Environment Variables for macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "TEST_USER=user1" >> $GITHUB_ENV
+          echo "TEST_ADMIN_USER=admin1" >> $GITHUB_ENV
+      
+      - name: Set Environment Variables for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo "TEST_USER=user2" >> $GITHUB_ENV
+          echo "TEST_ADMIN_USER=admin2" >> $GITHUB_ENV
+        
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
@@ -113,8 +123,6 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
-          TEST_USER: ${{ matrix.user }}
-          TEST_ADMIN_USER: ${{ matrix.admin_user }}
 
   create-qa-ticket:
     needs: ui-tests
