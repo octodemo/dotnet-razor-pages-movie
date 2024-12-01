@@ -3,6 +3,8 @@
 using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,11 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+
+// Configure Data Protection to use ephemeral keys
+builder.Services.AddDataProtection()
+    .SetApplicationName("RazorPagesMovie")
+    .UseEphemeralDataProtectionProvider();
 
 var app = builder.Build();
 
@@ -56,6 +63,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 app.Use(async (context, next) =>
@@ -79,6 +87,8 @@ app.Run();
 using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +105,11 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+
+// Configure Data Protection to use ephemeral keys
+builder.Services.AddDataProtection()
+    .SetApplicationName("RazorPagesMovie")
+    .UseEphemeralDataProtectionProvider();
 
 var app = builder.Build();
 
@@ -132,6 +147,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 app.Use(async (context, next) =>

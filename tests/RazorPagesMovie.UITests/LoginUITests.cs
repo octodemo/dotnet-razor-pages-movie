@@ -347,10 +347,20 @@ namespace RazorPagesMovie.UITests
             loginButton.Click();
 
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
-            
-            var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
-            Assert.Equal("Invalid username or password", errorMessage.Text);
+            try
+            {
+                wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+                var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
+                Assert.Equal("Invalid username or password", errorMessage.Text);
+            }
+            catch (WebDriverTimeoutException ex)
+            {
+                Console.WriteLine("Timed out waiting for error message to appear.");
+                Console.WriteLine("Current URL: " + _driver.Url);
+                Console.WriteLine("Page Source:");
+                Console.WriteLine(_driver.PageSource);
+                throw new Exception("Timed out waiting for error message to appear.", ex);
+            }
         }
 
         private void RetryClick(IWebElement element, int maxRetries = 3, int retryDelayMs = 500)
