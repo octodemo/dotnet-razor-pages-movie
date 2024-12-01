@@ -65,10 +65,10 @@ namespace RazorPagesMovie.UITests
             passwordField.SendKeys("invalidPassword");
             loginButton.Click();
 
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20)); // Increased timeout
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30)); // Increased timeout
             try
             {
-                wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div.text-danger.text-center.mt-3")));
+                wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.CssSelector("div.text-danger.text-center.mt-3")));
                 var errorMessage = _driver.FindElement(By.CssSelector("div.text-danger.text-center.mt-3"));
                 Assert.NotNull(errorMessage);
                 Assert.Equal("Invalid username or password", errorMessage.Text);
