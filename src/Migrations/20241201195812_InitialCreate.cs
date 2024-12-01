@@ -53,12 +53,29 @@ namespace RazorPagesMovie.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Password", "Role", "Username" },
-                values: new object[] { 1, "password", 2, "admin" });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Password", "Role", "Username" },
-                values: new object[] { 2, "password", 0, "user" });
+                values: new object[,]
+                {
+                    { 1, "password", 2, "admin" },
+                    { 2, "password", 2, "admin1" },
+                    { 3, "password", 2, "admin2" },
+                    { 4, "password", 2, "admin3" },
+                    { 5, "password", 2, "admin4" },
+                    { 6, "password", 2, "admin5" },
+                    { 7, "password", 2, "admin6" },
+                    { 8, "password", 2, "admin7" },
+                    { 9, "password", 2, "admin8" },
+                    { 10, "password", 2, "admin9" },
+                    { 11, "password", 0, "user" },
+                    { 12, "password", 0, "user1" },
+                    { 13, "password", 0, "user2" },
+                    { 14, "password", 0, "user3" },
+                    { 15, "password", 0, "user4" },
+                    { 16, "password", 0, "user5" },
+                    { 17, "password", 0, "user6" },
+                    { 18, "password", 0, "user7" },
+                    { 19, "password", 0, "user8" },
+                    { 20, "password", 0, "user9" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movie_UserId",

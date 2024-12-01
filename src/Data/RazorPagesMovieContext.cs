@@ -17,6 +17,8 @@ namespace RazorPagesMovie.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             // User configuration
             modelBuilder.Entity<User>(entity =>
             {
@@ -41,27 +43,52 @@ namespace RazorPagesMovie.Data
             });
 
             // Seed data with hashed passwords
-            var hashedAdminPw = HashPassword("admin123");
-            var hashedUserPw = HashPassword("user123");
+            var hashedAdminPw = HashPassword("password");
+            var hashedUserPw = HashPassword("password");
 
-            modelBuilder.Entity<User>().HasData(
-                new User
+            // Seed admin users
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = 1,
+                Username = "admin",
+                Password = "password",
+                Role = UserRole.Admin,
+                Timestamp = new byte[8]
+            });
+
+            for (int i = 2; i <= 10; i++)
+            {
+                modelBuilder.Entity<User>().HasData(new User
                 {
-                    Id = 1,
-                    Username = "admin",
+                    Id = i,
+                    Username = $"admin{i - 1}",
                     Password = "password",
                     Role = UserRole.Admin,
-                    Timestamp = new byte[8] // Initialize with empty timestamp
-                },
-                new User
+                    Timestamp = new byte[8]
+                });
+            }
+
+            // Seed standard users
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = 11,
+                Username = "user",
+                Password = "password",
+                Role = UserRole.Standard,
+                Timestamp = new byte[8]
+            });
+
+            for (int i = 12; i <= 20; i++)
+            {
+                modelBuilder.Entity<User>().HasData(new User
                 {
-                    Id = 2,
-                    Username = "user",
+                    Id = i,
+                    Username = $"user{i - 11}",
                     Password = "password",
                     Role = UserRole.Standard,
-                    Timestamp = new byte[8] // Initialize with empty timestamp
-                }
-            );
+                    Timestamp = new byte[8]
+                });
+            }
         }
 
         private static string HashPassword(string password)
