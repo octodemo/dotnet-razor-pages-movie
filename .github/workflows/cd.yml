@@ -151,7 +151,7 @@ jobs:
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
 
   create-qa-ticket:
-    needs: ui-tests-macos
+    needs: [ui-tests-macos, ui-tests-windows]
     permissions:
       actions: read
       contents: read
