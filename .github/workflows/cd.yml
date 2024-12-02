@@ -116,8 +116,15 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
   
+  wait-between-tests:
+    needs: ui-tests-macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for 5 minutes
+        run: sleep 300
+  
   ui-tests-windows:
-    needs: [ui-tests-macos, setup-staging-environment]
+    needs: [wait-between-tests, setup-staging-environment]
     permissions:
       actions: read
       contents: read
