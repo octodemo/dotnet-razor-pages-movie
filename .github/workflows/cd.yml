@@ -82,7 +82,7 @@ jobs:
           HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
           echo "HASH_URL=${HASH_URL}" >> $GITHUB_OUTPUT
 
-  ui-tests-macos:
+  ui-tests:
     needs: setup-staging-environment
     permissions:
       actions: read
@@ -102,52 +102,6 @@ jobs:
         uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: '6.0.x'
-
-      - name: Set Environment Variables for macOS
-        run: |
-          echo "TEST_USER=user1" >> $GITHUB_ENV
-          echo "TEST_ADMIN_USER=admin1" >> $GITHUB_ENV
-        
-      - name: Run UI Automated Selenium Tests
-        run: |
-          dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
-        working-directory: tests
-        env:
-          BROWSER: ${{ matrix.browser }}
-          BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
-  
-  wait-between-tests:
-    needs: ui-tests-macos
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for 5 minutes
-        run: sleep 300
-  
-  ui-tests-windows:
-    needs: [wait-between-tests, setup-staging-environment]
-    permissions:
-      actions: read
-      contents: read
-
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge, chromium]
-
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4.0.1
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Set Environment Variables for Windows
-        run: |
-          echo "TEST_USER=user1" >> $GITHUB_ENV
-          echo "TEST_ADMIN_USER=admin1" >> $GITHUB_ENV
         
       - name: Run UI Automated Selenium Tests
         run: |
@@ -158,7 +112,7 @@ jobs:
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
 
   create-qa-ticket:
-    needs: [ui-tests-macos, ui-tests-windows]
+    needs: [ui-tests]
     permissions:
       actions: read
       contents: read
