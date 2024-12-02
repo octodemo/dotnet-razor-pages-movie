@@ -92,7 +92,7 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge, chromium]
 
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
