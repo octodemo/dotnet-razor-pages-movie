@@ -104,7 +104,7 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Set Environment Variables for macOS and sleep to allow server recieve requests
+      - name: Set Environment Variables for macOS
         if: matrix.os == 'macos-latest'
         run: |
           echo "TEST_USER=user1" >> $GITHUB_ENV
