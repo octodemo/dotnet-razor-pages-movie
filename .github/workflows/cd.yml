@@ -109,14 +109,13 @@ jobs:
         run: |
           echo "TEST_USER=user1" >> $GITHUB_ENV
           echo "TEST_ADMIN_USER=admin1" >> $GITHUB_ENV
-          sleep 30
       
       - name: Set Environment Variables for Windows and sleep to allow server recieve requests
         if: matrix.os == 'windows-latest'
         run: |
           echo "TEST_USER=user2" >> $GITHUB_ENV
           echo "TEST_ADMIN_USER=admin2" >> $GITHUB_ENV
-          sleep 30
+          sleep 60
         
       - name: Run UI Automated Selenium Tests
         run: |
