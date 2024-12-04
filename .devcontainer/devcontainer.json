@@ -1,0 +1,24 @@
+{
+    "name": "RazorPagesMovie Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",
+    "forwardPorts": [5000, 5001],
+    "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "version": "latest",
+            "autoForwardPorts": true,
+            "moby": true
+        }
+    },
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+                "GitHub.copilot"
+            ]
+        }
+    }
+}

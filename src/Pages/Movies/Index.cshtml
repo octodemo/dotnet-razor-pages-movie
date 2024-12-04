@@ -1,0 +1,67 @@
+﻿@page
+@model RazorPagesMovie.Pages.Movies.IndexModel
+
+@{
+    ViewData["Title"] = "Movies";
+    var userRole = HttpContext.Session.GetString("UserRole");
+}
+
+<div class="movies-container">
+    <h1 class="display-4">Movies</h1>
+
+    <p>
+        <a asp-page="Create" class="btn btn-primary">Create New</a>
+    </p>
+
+    <form method="get" class="form-inline mb-4">
+        <div class="form-group mr-2">
+            <label asp-for="MovieGenre" class="mr-2">Genre</label>
+            <select asp-for="MovieGenre" asp-items="Model.Genres" class="form-control">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="form-group mr-2">
+            <label asp-for="SearchString" class="mr-2">Title</label>
+            <input type="text" asp-for="SearchString" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+    </form>
+
+    <div class="movie-list">
+        @foreach (var item in Model.Movie)
+        {
+            <div class="movie-card card mb-4">
+                <div class="movie-card-inner">
+                    <div class="movie-card-front card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <p class="card-text"><strong>Release Date:</strong> @item.ReleaseDate.ToShortDateString()</p>
+                        <p class="card-text"><strong>Genre:</strong> @item.Genre</p>
+                        <p class="card-text"><strong>Price:</strong> @item.Price.ToString("c")</p>
+                        <p class="card-text"><strong>Rating:</strong> @item.Rating</p>
+                    </div>
+                    <div class="movie-card-back card-body">
+                        <h5 class="card-title">Details</h5>
+                        <p class="card-text"><strong>Title:</strong> @item.Title</p>
+                        <p class="card-text"><strong>Release Date:</strong> @item.ReleaseDate.ToShortDateString()</p>
+                        <p class="card-text"><strong>Genre:</strong> @item.Genre</p>
+                        <p class="card-text"><strong>Price:</strong> @item.Price.ToString("c")</p>
+                        <p class="card-text"><strong>Rating:</strong> @item.Rating</p>
+                        @if (userRole == "Admin")
+                        {
+                            <div class="movie-actions">
+                                <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                                <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="movie-actions">
+                                <button class="btn btn-primary btn-sm">Add to favorites list</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

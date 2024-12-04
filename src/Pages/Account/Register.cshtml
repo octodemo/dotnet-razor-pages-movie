@@ -1,0 +1,40 @@
+@page
+@model RazorPagesMovie.Pages.Account.RegisterModel
+@using RazorPagesMovie.Models
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="RegisterUser.Username"></label>
+        <input asp-for="RegisterUser.Username" class="form-control" />
+        <span asp-validation-for="RegisterUser.Username" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RegisterUser.Password"></label>
+        <input asp-for="RegisterUser.Password" type="password" class="form-control" />
+        <span asp-validation-for="RegisterUser.Password" class="text-danger"></span>
+    </div>
+    @if (HttpContext.Session.GetString("UserRole") == "Admin")
+    {
+        <div class="form-group">
+            <label asp-for="RegisterUser.Role">User Role</label>
+            <select asp-for="RegisterUser.Role" asp-items="Html.GetEnumSelectList<UserRole>()" class="form-control"></select>
+        </div>
+    }
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

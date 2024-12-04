@@ -21,20 +21,22 @@ on:
         required: false
         type: string
         default: 'false'
+
 env:
   RESOURCE_GROUP: "tsvi-rg"
   CONTAINER_REGISTRY: "ghcr.io/octodemo/dotnet-razor-pages-movie"
 
 jobs:
-  staging-end2end-tests:
+  setup-staging-environment:
     permissions:
       actions: read
-      id-token: write # This is required for requesting the JWT
-      contents: read  # This is required for actions/checkout
-      issues: write
+      id-token: write
+      contents: read
 
-    
     runs-on: ubuntu-latest
+    outputs:
+      CONTAINER_APP_URL: ${{ steps.capture_outputs.outputs.CONTAINER_APP_URL }}
+      HASH_URL: ${{ steps.generate_url.outputs.HASH_URL }}
     environment: STAGE
     steps:
       - name: Checkout code
@@ -66,7 +68,7 @@ jobs:
       - name: Capture Terraform Outputs
         id: capture_outputs
         run: |
-          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
+          echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_OUTPUT
         working-directory: ./terraform/staging
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -74,20 +76,62 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
-      - name: Upload Teraaform State and files
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: terraform-state
-          path: ./terraform/staging/
-
-      - name: Generate Artifact URL
-        id: generate_artifact_url
+      - name: Generate URL at commit hash to IaC staging files
+        id: generate_url
         run: |
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state") | .id')
-          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
-          echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
+          HASH_URL="https://github.com/${{ github.repository }}/tree/${{ github.sha }}/terraform/staging"
+          echo "HASH_URL=${HASH_URL}" >> $GITHUB_OUTPUT
 
-      # Open an issue and notify QA that the staging environment is ready for testing
+  ui-tests:
+    needs: setup-staging-environment
+    permissions:
+      actions: read
+      contents: read
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge, chromium]
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: '6.0.x'
+        
+      - name: Run UI Automated Selenium Tests
+        run: |
+          dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
+        working-directory: tests
+        env:
+          BROWSER: ${{ matrix.browser }}
+          BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
+
+  workflow-telemetry:
+    needs: [ui-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Workflow Telemetry - Generate heat map and performance data
+        uses: catchpoint/workflow-telemetry-action@v2.0.0
+
+  create-qa-ticket:
+    needs: [ui-tests]
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
       - name: Create Issue
         uses: actions/github-script@v7.0.1
         with:
@@ -106,8 +150,7 @@ jobs:
             - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
             - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
             - **Terraform IaC files:**
-              - **Artifact ID:** \`${process.env.ARTIFACT_ID}\`
-              - **Artifact URL:** [📁 Download](${process.env.ARTIFACT_URL})
+              - **Terraform Files at Commit Hash:** 🛠️ [Commit SHA](${process.env.HASH_URL})
             `;
             
             github.rest.issues.create({
@@ -122,20 +165,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
-          ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
-
+          HASH_URL: ${{ env.HASH_URL }}
 
   production:
     permissions:
       actions: read
-      id-token: write # This is required for requesting the JWT
-      contents: write  # This is required for actions/checkout and the create-release action
+      id-token: write
+      contents: write
     
     runs-on: ubuntu-latest
     environment: 
       name: PROD
       url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
-    needs: [staging-end2end-tests]
+    needs: [create-qa-ticket]
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
@@ -162,20 +205,7 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
-      
-      - name: Upload Teraaform State and files
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: terraform-state-prod
-          path: ./terraform/production/
 
-      - name: Generate Artifact URL
-        id: generate_artifact_url
-        run: |
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="terraform-state-prod") | .id')
-          echo "ARTIFACT_ID=$ARTIFACT_ID" >> $GITHUB_ENV
-          echo "ARTIFACT_URL=https://github.com/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts/${ARTIFACT_ID}" >> $GITHUB_ENV
-      
       - name: Capture Terraform Output
         id: output
         run: echo "CONTAINER_APP_URL=$(terraform output -raw container_app_url)" >> $GITHUB_ENV
@@ -193,8 +223,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
-          ARTIFACT_ID: ${{ env.ARTIFACT_ID }}
-          ARTIFACT_URL: ${{ env.ARTIFACT_URL }}
 
         with:
           tag: ${{ inputs.image_tag }}
