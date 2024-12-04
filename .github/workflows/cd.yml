@@ -111,6 +111,9 @@ jobs:
           BROWSER: ${{ matrix.browser }}
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
 
+      - name: Workflow Telemetry - Generate heat map and performance data
+        uses: catchpoint/workflow-telemetry-action@v2.0.0
+
   create-qa-ticket:
     needs: [ui-tests]
     permissions:
