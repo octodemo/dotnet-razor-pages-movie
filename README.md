@@ -64,7 +64,7 @@ graph TD
         O --> Q[Build Project<br>Compile the project and generate binaries]
         O --> R[Run Unit Tests<br>Run all unit tests]
         P --> S{CodeQL Analysis Passes?}
-        S -- Yes --> T[Proceed to Build]
+        S -- Yes --> T[Proceed to Unit Tests]
         S -- No --> U[Fail PR<br>CodeQL analysis failed]
         Q --> V{Build Passes?}
         V -- Yes --> W[Proceed to Unit Tests]
