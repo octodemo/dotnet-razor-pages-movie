@@ -4,6 +4,18 @@ This repository demonstrates how to set up a CI/CD pipeline for a Razor Pages Mo
 
 ## 🌟 Overview
 
+The Razor Pages Movie application is a simple movie list application that allows users to view, create, edit, and delete movies. The application is built using the following technologies:
+- **Frontend**: Razor Pages, HTML, CSS, Bootstrap
+- **Backend**: ASP.NET Core Razor Pages, Entity Framework Core
+- **Database**: Azure SQL Or SQL Server Database
+- **Testing**: xUnit, Selenium
+- **Deployment**: Azure Container Apps via OIDC (OpenID Connect)
+- **Infrastructure**: Terraform (IaC)
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Application Insights on Azure Portal
+- **GitHub Advanced Security**: CodeQL Analysis, secret scanning, Dependabot alerts, GitHub Copilot Auto-Fix suggestions on PRs
+
+
 The CI/CD pipeline is defined using GitHub Actions workflows and Terraform for infrastructure as code. The main workflows are:
 
 - **🔄 CI Workflow**: Builds and tests the application.
@@ -29,18 +41,57 @@ Mermaid diagram:
 
 ```mermaid
 graph TD
-    A[Code] --> B(Checkout Code)
-    B --> C(Initialize CodeQL)
-    C --> D(Set up .NET)
-    D --> E(Cache NuGet Packages)
-    E --> F(Restore Dependencies)
-    F --> G(Build Project)
-    G --> H(Publish Project)
-    H --> I(Upload Published App)
-    I --> J(Perform CodeQL Analysis)
-    J --> K(Split Tests)
-    K --> L(Run Unit Tests)
-    L --> M(Publish Test Results)
+    A[📥 Checkout Code<br>Clone the repository to the runner environment] --> B[🔍 Initialize CodeQL<br>Set up CodeQL for security analysis]
+    B --> C[⚙️ Set up .NET<br>Install .NET SDK and runtime]
+    C --> D[📦 Cache NuGet Packages<br>Cache dependencies to speed up the build process]
+    D --> E[📦 Restore Dependencies<br>Restore NuGet packages required for the project]
+    E --> F[🏗️ Build Project<br>Compile the project and generate binaries]
+    F --> G[🚀 Publish Project<br>Prepare the project for deployment]
+    G --> H[⬆️ Upload Published App<br>Upload the compiled project for further steps]
+    H --> I[🔍 Perform CodeQL Analysis<br>Analyze the codebase for security vulnerabilities]
+    I --> J[🔄 Split Tests<br>Divide tests into smaller groups for parallel execution]
+    J --> K1[🧪 Run Unit Tests - Group 1<br>Run unit tests for the first group]
+    J --> K2[🧪 Run Unit Tests - Group 2<br>Run unit tests for the second group]
+    J --> K3[🧪 Run Unit Tests - Group 3<br>Run unit tests for the third group]
+    K1 --> L[📊 Publish Test Results<br>Publish the results of all unit tests]
+    K2 --> L
+    K3 --> L
+    L --> M[📈 Upload Code Coverage Report<br>Generate and upload the code coverage report]
+
+    subgraph Pull Request Process
+        N[Create Pull Request<br>Developer creates a pull request] --> O[Run CI Workflow<br>CI workflow is triggered]
+        O --> P[CodeQL Analysis<br>Analyze the codebase for security vulnerabilities]
+        O --> Q[Build Project<br>Compile the project and generate binaries]
+        O --> R[Run Unit Tests<br>Run all unit tests]
+        P --> S{CodeQL Analysis Passes?}
+        S -- Yes --> T[Proceed to Build]
+        S -- No --> U[Fail PR<br>CodeQL analysis failed]
+        Q --> V{Build Passes?}
+        V -- Yes --> W[Proceed to Unit Tests]
+        V -- No --> X[Fail PR<br>Build failed]
+        R --> Y{Unit Tests Pass?}
+        Y -- Yes --> Z[All Checks Passed<br>Ready for review and merge]
+        Y -- No --> AA[Fail PR<br>Unit tests failed]
+    end
+
+    subgraph Merge Process
+        AB[Review PR<br>Reviewers review the pull request] --> AC{All Reviews Approved?}
+        AC -- Yes --> AD[Merge PR<br>Merge the pull request into the main branch]
+        AC -- No --> AE[Request Changes<br>Developer makes changes and updates the PR]
+    end
+
+    subgraph Repository Rulesets
+        AF[Status Checks<br>Ensure all status checks pass before merging]
+        AG[Branch Protection<br>Enforce Repository Branch Rulesets]
+        AH[Require Reviews<br>Require at least one review before merging]
+        AI[Restrict Merge<br>Restrict who can merge pull requests]
+    end
+
+    Z --> AB
+    AD --> AF
+    AD --> AG
+    AD --> AH
+    AD --> AI
 ```
 </details>
 
@@ -63,19 +114,41 @@ Continuous Delivery automatically deploys the application to Azure Container App
 
 ```mermaid
 graph TD
-        A[Code] --> B(Checkout Code)
-        B --> C(Az CLI Login via OIDC)
-        C --> D(Deploy the Azure App - Including DB Migrations STAGING ENVIRONMENT)
-        D --> E(Capture Terraform Outputs)
-        E --> F(Generate URL at Commit Hash to IaC Staging Files)
-        F --> G(Run UI Automated Selenium Tests)
-        G --> H(Generate Workflow Telemetry)
-        H --> I(Create QA Ticket)
-        I --> J(Deploy the Azure App - Including DB Migrations PRODUCTION ENVIRONMENT)
-        J --> K(Capture Terraform Output)
-        K --> L{Check if Revision Exists}
-        L --> M{If Revision Exists, Deploy New Revision - Canary Deployment}
-        M --> N(Create GitHub Release)
+    subgraph Build and Push Docker Image
+        A[🐳 Build Docker Image<br>Build the Docker image]
+        A --> B[📤 Push Docker Image<br>Push the Docker image to GHCR]
+    end
+
+    subgraph Deploy to Staging
+        D[📥 Checkout Code<br>Clone the repository to the runner environment] --> E[🔑 Az CLI Login via OIDC<br>Authenticate with Azure]
+        E --> F[🚀 Deploy the Azure App - Including DB Migrations]
+        F --> G[📊 Capture deployment outputs]
+        G --> H[🔗 Generate URL at Commit Hash to IaC Staging Files]
+    end
+
+    subgraph Functional UI Tests
+        H --> I[🧪 Run UI Tests<br>Run UI Automated Selenium Tests]
+        I --> Q1[🌐 Run functional UI tests on Chrome]
+        I --> Q2[🌐 Run functional UI tests on Firefox]
+        I --> Q3[🌐 Run functional UI tests on Edge]
+        I --> Q4[🌐 Run functional UI tests on Chromium]
+    end
+
+    subgraph Post-Functional tests Steps
+        I --> J[📈 Generate Telemetry<br>* Runner Utilization Metrics<br>* CPU heat map<br>* Memory usage]
+        J --> K[📝 Create QA Ticket<br>Create QA Ticket for testing]
+    end
+
+    subgraph Deploy to Production
+        K --> L[🚀 Deploy to Production Azure App]
+        L --> M[📊 Capture Terraform Outputs]
+        M --> N{🔍 Check if Revision Exists}
+        N --> O{🚀 Deploy new revision with smaller traffic <=30%}
+        O --> P[🏷️ Create a GitHub release for the new deployment]
+    end
+
+    B --> F
+    B --> L
 ```
 
 </details>
