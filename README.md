@@ -28,8 +28,6 @@ To run the Razor Pages Movie application locally using Docker Compose, follow th
 ```sh
 docker compose up
 ```
-<button onclick="copyToClipboard()">Copy Command</button>
-<script> function copyToClipboard() { const command = 'docker-compose up'; navigator.clipboard.writeText(command).then(() => { alert('Command copied to clipboard'); }); } </script>
 
 This command will start both the SQL Server and the web application containers. The web application will be accessible at: http://localhost
 
