@@ -15,8 +15,10 @@ The Razor Pages Movie application is a simple movie list application that allows
 - **Monitoring**: Application Insights on Azure Portal
 - **GitHub Advanced Security**: CodeQL Analysis, secret scanning, Dependabot alerts, GitHub Copilot Auto-Fix suggestions on PRs
 
-<img src="./assets/app-screenshot1.png" alt="Home Page" width="600"/>
-<img src="./assets/app-screenshot2.png" alt="Movies Library" width="600"/>
+<div style="display: flex; justify-content: space-between;">
+  <img src="./assets/app-screenshot1.png" alt="Home Page" width="45%"/>
+  <img src="./assets/app-screenshot2.png" alt="Movies Library" width="45%"/>
+</div>
 
 ## 💻 🚀 Running the app localy
 To run the Razor Pages Movie application locally using Docker Compose, follow these steps:
