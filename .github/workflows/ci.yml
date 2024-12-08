@@ -24,6 +24,7 @@ on:
       - '.devcontainer/**'
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/workflows/housekeeping*.yml'
+      - 'docker-compose.yml'
   
   pull_request_target:
     branches:
@@ -34,6 +35,7 @@ on:
       - '.devcontainer/**'
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/workflows/housekeeping*.yml'
+      - 'docker-compose.yml'
 
 # defining global environment variables for all jobs
 env:
