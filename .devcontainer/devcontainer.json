@@ -1,7 +1,7 @@
 {
     "name": "RazorPagesMovie Dev Container",
     "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",
-    "forwardPorts": [5000, 5001],
+    "forwardPorts": [80],
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
             "version": "latest",
@@ -20,5 +20,6 @@
                 "GitHub.copilot"
             ]
         }
-    }
+    },
+    "postCreateCommand": "docker-compose up -d"
 }

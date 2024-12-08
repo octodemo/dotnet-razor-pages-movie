@@ -120,7 +120,7 @@ jobs:
         uses: catchpoint/workflow-telemetry-action@v2.0.0
 
   create-qa-ticket:
-    needs: [ui-tests]
+    needs: [ui-tests, setup-staging-environment]
     permissions:
       actions: read
       contents: read
@@ -131,6 +131,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
+
+      - name: set CONTINER_APP_URL and HASH_URL in environment for the github-script action
+        run: |
+          echo CONTAINER_APP_URL="${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}" >> $GITHUB_ENV
+          echo HASH_URL="${{ needs.setup-staging-environment.outputs.HASH_URL }}" >> $GITHUB_ENV
 
       - name: Create Issue
         uses: actions/github-script@v7.0.1
@@ -164,8 +169,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
-          CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
-          HASH_URL: ${{ env.HASH_URL }}
 
   production:
     permissions:

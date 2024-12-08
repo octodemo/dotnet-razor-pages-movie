@@ -31,7 +31,20 @@ To run the Razor Pages Movie application locally using Docker Compose, follow th
 docker compose up
 ```
 
-This command will start both the SQL Server and the web application containers. <br>
+This command will start both the SQL Server and the web application containers. 
+
+## 🚀 Running the app in GitHub Codespaces
+To run the Razor Pages Movie application in GitHub Codespaces with the default .devcontainer setup, follow these steps:
+
+Open the repository in GitHub Codespaces.
+The .devcontainer setup will automatically start the application on startup on port 80.
+
+## 🌐 Accessing the Application
+The landing page will prompt you to login. By default, there are two main user logins for demonstration purposes:
+- **Admin**: Username: `admin`, Password: `password`
+- **User**: Username: `user`, Password: `password`
+
+<br>
 The web application will be accessible at: http://localhost
 
 <details>
