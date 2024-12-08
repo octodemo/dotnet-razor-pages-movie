@@ -15,7 +15,33 @@ The Razor Pages Movie application is a simple movie list application that allows
 - **Monitoring**: Application Insights on Azure Portal
 - **GitHub Advanced Security**: CodeQL Analysis, secret scanning, Dependabot alerts, GitHub Copilot Auto-Fix suggestions on PRs
 
+<img src="./assets/app-screenshot1.png" alt="Home Page" width="600"/>
+<img src="./assets/app-screenshot2.png" alt="Movies Library" width="600"/>
 
+## 💻 🚀 Running the app localy
+To run the Razor Pages Movie application locally using Docker Compose, follow these steps:
+
+1. Ensure you have Docker and Docker Compose installed on your machine.
+2. Navigate to the root directory of your project where the `docker-compose.yml` file is located.
+3. Run the following command to start the application:
+
+```sh
+docker compose up
+```
+<button onclick="copyToClipboard()">Copy Command</button>
+<script> function copyToClipboard() { const command = 'docker-compose up'; navigator.clipboard.writeText(command).then(() => { alert('Command copied to clipboard'); }); } </script>
+
+This command will start both the SQL Server and the web application containers. The web application will be accessible at: http://localhost
+
+<details>
+  <summary>Disclaimer - expand to read</summary> 
+
+The application is not yet fully functional and is still under development.
+The default behavior is that the application will run on http://localhost with SSL/TLS certificate validation disabled when connecting to the SQL Server. This is achieved by adding the `TrustServerCertificate` parameter to the connection string in the `docker-compose.yml` file. This allows the application to connect to the SQL Server without validating the SSL/TLS certificate.
+
+</details>
+
+## 🚀 Deployment Pipline in CI/CD
 The CI/CD pipeline is defined using GitHub Actions workflows and Terraform for infrastructure as code. The main workflows are:
 
 - **🔄 CI Workflow**: Builds and tests the application.
