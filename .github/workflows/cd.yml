@@ -120,7 +120,7 @@ jobs:
         uses: catchpoint/workflow-telemetry-action@v2.0.0
 
   create-qa-ticket:
-    needs: [ui-tests]
+    needs: [ui-tests, setup-staging-environment]
     permissions:
       actions: read
       contents: read
@@ -164,7 +164,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
-          CONTAINER_APP_URL: ${{ env.CONTAINER_APP_URL }}
+          CONTAINER_APP_URL: ${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}
           HASH_URL: ${{ env.HASH_URL }}
 
   production:
