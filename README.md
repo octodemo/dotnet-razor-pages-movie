@@ -153,3 +153,32 @@ graph TD
 
 </details>
 
+## 🔄 Deployment Strategies
+
+### Staging vs Production Deployment Flow - Canary Deployment
+This deployment strategy is orchestrated with the Terraform scripts located in the `terraform` folder.
+
+```mermaid
+flowchart TD
+    subgraph Staging Deployment
+        A1[🚀 Start] --> B1[🗄️ Create Staging Database]
+        B1 --> C1[📦 Deploy Staging Container App with Single Revision]
+        C1 --> D1[🔄 Set Traffic to 100% for Latest Revision]
+        D1 --> E1[🏁 End]
+    end
+
+    subgraph Production Deployment
+        A2[🚀 Start] --> B2[🔍 Check Existing Container App]
+        B2 --> C2{🔄 Existing Revision?}
+        C2 -->|✔️ Yes| D2[🆕 Create New Revision with Canary Deployment]
+        C2 -->|❌ No| E2[📦 Create Production Container App]
+        D2 --> F2[🔄 Set Traffic Split for Canary Deployment]
+        F2 --> G2[📊 Monitor and Validate New Revision]
+        G2 --> H2{✅ Valid?}
+        H2 -->|✔️ Yes| I2[🚀 Promote New Revision to Production]
+        H2 -->|❌ No| J2[↩️ Rollback to Previous Revision]
+        E2 --> I2
+        I2 --> K2[🏁 End]
+    end
+
+```
