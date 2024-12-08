@@ -132,6 +132,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
 
+      - name: set CONTINER_APP_URL and HASH_URL in environment for the github-script action
+        run: |
+          echo CONTAINER_APP_URL="${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}" >> $GITHUB_ENV
+          echo HASH_URL="${{ needs.setup-staging-environment.outputs.HASH_URL }}" >> $GITHUB_ENV
+
       - name: Create Issue
         uses: actions/github-script@v7.0.1
         with:
@@ -148,7 +153,7 @@ jobs:
             
             **Additional Information:**
             - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
-            - **App Server URL:** 🔗 https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}
+            - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
             - **Terraform IaC files:**
               - **Terraform Files at Commit Hash:** 🛠️ [Commit SHA](${process.env.HASH_URL})
             `;
@@ -164,7 +169,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_TAG: ${{ inputs.image_tag }}
-          HASH_URL: ${{ env.HASH_URL }}
 
   production:
     permissions:

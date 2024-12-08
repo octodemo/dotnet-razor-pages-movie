@@ -1,0 +1,298 @@
+# name of the workflow. Link to the documentation - https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#name
+name: CI
+# running on push to main and develop branches or on pull reuqests or on manual trigger
+on: 
+  # manual trigger
+  workflow_dispatch:
+    inputs:
+      ssh_debug_enabled:
+        type: boolean
+        description: 'Run the build/test with ssh debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+      debug_deployment:
+        type: string
+        description: 'Run the pipeline with debug deployment enabled'
+        required: false
+        default: 'false'
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/README.md'
+      - '.devcontainer/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/workflows/housekeeping*.yml'
+      - 'docker-compose.yml'
+  
+  pull_request_target:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/README.md'
+      - '.devcontainer/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/workflows/housekeeping*.yml'
+      - 'docker-compose.yml'
+
+# defining global environment variables for all jobs
+env:
+  # define runner indexes for tests splitting and parallel execution
+  total-runners: 4
+  # defining GitHub registry for docker images
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    name: Build (${{ matrix.language }})
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
+    
+    strategy:
+      matrix:
+        include:
+        - language: csharp
+          build-mode: manual
+          runner: tsvi-linux8cores
+        - language: javascript-typescript
+          build-mode: none
+          runner: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.2.2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.0.1
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Cache NuGet packages
+      if: matrix.build-mode == 'manual'
+      uses: actions/cache@v4.0.2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    
+    - name: Restore dependencies
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
+      run: dotnet restore RazorPagesMovie.sln
+
+    - name: Build App project
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
+      run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
+
+    # - name: Set runtime
+    #   if: matrix.language == 'csharp'
+    #   id: set-runtime
+      # run: echo "RUNTIME=${{ matrix.os == 'ubuntu-latest' && 'linux-x64' || matrix.os == 'windows-latest' && 'win-x64' || 'osx-x64' }}" >> $GITHUB_ENV
+
+    - name: Publish
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
+      run: dotnet publish RazorPagesMovie.csproj --configuration Release --output publish --self-contained --runtime linux-x64
+      working-directory: src
+
+    - name: Upload published app
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
+      uses: actions/upload-artifact@v4.4.3
+      with:
+        name: razor-linux-arm64
+        path: src/publish/
+      
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: 
+      - build
+      - runner-indexes
+    
+    permissions:
+      contents: read # read access to the repository contents
+      packages: write # write access to the repository packages
+      id-token: write # write access to the repository id token
+
+    strategy:
+      matrix:
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
+        index: ${{ fromJson(needs.runner-indexes.outputs.json) }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.1.0
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Cache NuGet packages
+      uses: actions/cache@v4.1.2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3.19
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.ssh_debug_enabled }}
+    
+    - name: Split Tests
+      id: split-test
+      uses: scruplelesswizard/split-tests@4f1ca766cb93923ca216e02f1aefed20944e313f
+      with:
+        glob: tests/RazorPagesMovie.Tests/**/*Tests.cs
+        split-total: ${{ env.total-runners }}
+        split-index: ${{ matrix.index }}
+        line-count: true
+
+    - name: Restore dependencies
+      run: dotnet restore RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj
+      working-directory: tests
+
+    - name: Convert Test File Path to Fully Qualified Name
+      id: convert-path
+      run: |
+        test_suite="${{ steps.split-test.outputs.test-suite }}"
+        echo "test_suite=$test_suite"
+        fully_qualified_name=$(echo $test_suite | sed 's/\//./g' | sed 's/.cs//g' | sed 's/^tests\.//g' | xargs)
+        echo "fully_qualified_name=$fully_qualified_name" >> $GITHUB_ENV
+      working-directory: tests
+
+    - run: 'echo "This runner will execute the following tests: ${{ steps.split-test.outputs.test-suite }}"'
+    - run: 'echo "Fully qualified name: ${{ env.fully_qualified_name }}"'
+
+    - run: |
+        dotnet test RazorPagesMovie.Tests/RazorPagesMovie.Tests.csproj \
+          --filter "FullyQualifiedName~${{ env.fully_qualified_name }}" \
+          --logger "console;verbosity=detailed" \
+          --logger "trx;LogFileName=testresults-${{ matrix.index }}-testresults-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}.trx" \
+          --results-directory testresults
+      working-directory: tests
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4.3.6
+      with:
+        name: testresults-${{ github.run_id }}-split-${{ matrix.index }}
+        path: tests/testresults/
+        if-no-files-found: warn
+        compression-level: 6
+
+  publish-test-results:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.2.2
+
+    - name: List Artifacts
+      id: list-artifacts
+      run: |
+        curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+             -H 'Accept: application/vnd.github.v3+json' \
+             https://api.github.com/repos/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts > artifacts.json
+
+    - name: Download Artifacts
+      run: |
+        mkdir -p test_results
+        for url in $(jq -r '.artifacts[] | select(.name | startswith("testresults-")) | .archive_download_url' artifacts.json); do
+            artifact_name=$(echo $url | awk -F/ '{print $NF}' | awk -F? '{print $1}')
+            curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} -L -o test_results/testresults.zip $url
+            unzip -o test_results/testresults.zip -d test_results
+            rm test_results/testresults.zip
+        done
+
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1.8.0
+      if: always()
+      with:
+        reporter: dotnet-trx
+        name: xUnit Test Results
+        path: test_results/**/*.trx
+
+  build-and-publish-docker-image: # job to build the docker image and publish it to the GitHub Container Registry
+    runs-on: ubuntu-latest # using the latest ubuntu runner
+    outputs:
+      image_tag: ${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
+    needs: [build, test] # depend on the build job to get the published app artifact
+    if: github.event_name == 'push' || (github.event_name == 'pull_request_target' && github.base_ref == 'main' && github.head_ref == 'develop')
+    permissions:
+      packages: write
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - uses: actions/download-artifact@v4.1.8 # download the published app artifact from the build job
+        with:
+          name: razor-linux-arm64
+          path: publish/
+
+      # build the docker image using the Dockerfile in the root of the repository 
+      # and tag it with the current run number from the github action workflow run
+      - name: Log in to the GH Container Registry
+        uses: docker/login-action@v3.3.0 # using the docker login action from the github marketplace - github.com/marketplace/actions/docker-login
+        with:
+          registry: ${{ env.REGISTRY }} # using the registry environment variable
+          username: ${{ github.actor }} # using the github.actor context
+          password: ${{ secrets.GITHUB_TOKEN }} # using the GITHUB_TOKEN secret
+
+      - name: Build and push Docker image
+        id: build_image
+        uses: docker/build-push-action@v6.9.0 # using the docker build and push action from the github marketplace - github.com/marketplace/actions/build-and-push-docker-images
+        with: 
+          context: . # using the current directory as the context
+          push: true # push the docker image to the registry
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.run_number }}
+            ghcr.io/${{ github.repository }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:latest # use the docker layer caching to speed up the docker image build process
+          cache-to: type=inline
+
+  deploy:
+    needs: [build-and-publish-docker-image] # this job needs build-and-publish-docker-image job as a requirement to run
+    uses: ./.github/workflows/cd.yml
+    with:
+      # with tag from the build-and-publish-docker-image job in the output_tags step
+      image_tag: "${{ needs.build-and-publish-docker-image.outputs.image_tag }}"
+      debug: "${{ github.event.inputs.debug_deployment }}"
+    secrets: inherit
+  
+  runner-indexes: # job to generate the runner indexes for the unit-parallel-tests job
+    runs-on: ubuntu-latest
+    name: Generate runner indexes
+    outputs:
+      json: ${{ steps.generate-index-list.outputs.json }} # output the json with the runner indexes
+    steps:
+      - id: generate-index-list # generate the runner indexes and save them to the json file
+        run: |
+          MAX_INDEX=$((${{ env.total-runners }}-1)) # calculate the max index
+          INDEX_LIST=$(seq 0 ${MAX_INDEX}) # generate the list of indexes
+          INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST}) # convert the list to the json
+          echo "json=${INDEX_JSON}" >> $GITHUB_OUTPUT # save the json to the GITHUB_OUTPUT environment variable
