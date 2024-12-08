@@ -17,7 +17,7 @@ The Razor Pages Movie application is a simple movie list application that allows
 
 <div style="display: flex; justify-content: space-between;">
   <img src="./assets/app-screenshot1.png" alt="Home Page" width="45%"/>
-  <img src="./assets/app-screenshot2.png" alt="Movies Library" width="42%"/>
+  <img src="./assets/app-screenshot2.png" alt="Movies Library" width="44%"/>
 </div>
 
 ## 💻 🚀 Running the app localy
