@@ -148,7 +148,7 @@ jobs:
             
             **Additional Information:**
             - **Image Tag:** 🐳 [Docker Image](https://github.com/octodemo/dotnet-razor-pages-movie/pkgs/container/dotnet-razor-pages-movie) tag: \`${process.env.IMAGE_TAG}\`
-            - **App Server URL:** 🔗 https://${process.env.CONTAINER_APP_URL}
+            - **App Server URL:** 🔗 https://${{ env.CONTAINER_APP_URL }}
             - **Terraform IaC files:**
               - **Terraform Files at Commit Hash:** 🛠️ [Commit SHA](${process.env.HASH_URL})
             `;
