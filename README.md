@@ -31,7 +31,8 @@ To run the Razor Pages Movie application locally using Docker Compose, follow th
 docker compose up
 ```
 
-This command will start both the SQL Server and the web application containers. The web application will be accessible at: http://localhost
+This command will start both the SQL Server and the web application containers. <br>
+The web application will be accessible at: http://localhost
 
 <details>
   <summary>Disclaimer - expand to read</summary> 
