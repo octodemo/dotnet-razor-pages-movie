@@ -116,9 +116,9 @@ jobs:
         uses: actions/cache@v4.0.2
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ hashFiles('tests/RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj') }}
+          key: nuget-ui-tests-${{ hashFiles('tests/RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj') }}
           restore-keys: |
-            nuget-
+            nuget-ui-tests-
 
       - name: Run UI Automated Selenium Tests
         run: |
