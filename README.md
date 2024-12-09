@@ -44,7 +44,7 @@ The landing page will prompt you to login. By default, there are two main user l
 - **Admin**: Username: `admin`, Password: `password`
 - **User**: Username: `user`, Password: `password`
 
-<br>
+
 The web application will be accessible at: [http://localhost](http://localhost)
 
 <details>
