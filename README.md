@@ -45,7 +45,7 @@ The landing page will prompt you to login. By default, there are two main user l
 - **User**: Username: `user`, Password: `password`
 
 <br>
-The web application will be accessible at: http://localhost
+The web application will be accessible at: [http://localhost](http://localhost)
 
 <details>
   <summary>Disclaimer - expand to read</summary> 
@@ -205,6 +205,7 @@ flowchart TD
         B1 --> C1[📦 Deploy Staging Container App with Single Revision]
         C1 --> D1[🔄 Set Traffic to 100% for Latest Revision]
         D1 --> E1[🏁 End]
+        C1 -->|Failure| F1[↩️ Rollback to Previous State]
     end
 
     subgraph Production Deployment
@@ -219,6 +220,27 @@ flowchart TD
         H2 -->|❌ No| J2[↩️ Rollback to Previous Revision]
         E2 --> I2
         I2 --> K2[🏁 End]
+    end
+```
+
+### Database Deployments Rollout
+
+Database deployments are handled as part of the application deployment process. During the deployment, database migrations are applied to ensure the database schema is up-to-date. If the deployment fails, the changes are rolled back to the previous state to maintain database integrity.
+
+```mermaid
+
+flowchart TD
+    subgraph Database Deployment
+        A[🚀 Start] --> B[🔍 Check Database State]
+        B --> C{🔄 Migrations Pending?}
+        C -->|✔️ Yes| D[🔄 Apply Pending Migrations]
+        C -->|❌ No| E[🏁 End]
+        D --> F[📊 Monitor Migration Progress]
+        F --> G{✅ Successful?}
+        G -->|✔️ Yes| H[🏁 End]
+        G -->|❌ No| I[↩️ Rollback Migration]
+        I --> E
+        E --> H
     end
 
 ```
