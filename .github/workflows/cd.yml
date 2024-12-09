@@ -55,6 +55,7 @@ jobs:
       - name: Terraform Commands
         run: |
           terraform init
+          terraform state pull > terraform.tfstate.backup
           terraform validate
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
@@ -64,6 +65,14 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+
+      - name: Check Apply Result
+        if: failure()
+        run: |
+          echo "Terraform apply failed. Reverting to previous state..."
+          terraform state push terraform.tfstate.backup
+          exit 1
+        working-directory: ./terraform/staging
 
       - name: Capture Terraform Outputs
         id: capture_outputs
@@ -102,7 +111,15 @@ jobs:
         uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: '6.0.x'
-        
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.nuget/packages
+          key: nuget-ui-tests-${{ hashFiles('tests/RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj') }}
+          restore-keys: |
+            nuget-ui-tests-
+
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
@@ -199,6 +216,7 @@ jobs:
       - name: Terraform Commands
         run: |
           terraform init
+          terraform state pull > terraform.tfstate.backup
           terraform validate
           terraform plan -out=tfplan -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' -var 'image_tag=${{ inputs.image_tag }}'
           terraform apply -auto-approve tfplan
@@ -208,6 +226,14 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+
+      - name: Check Apply Result
+        if: failure()
+        run: |
+          echo "Terraform apply failed. Reverting to previous state..."
+          terraform state push terraform.tfstate.backup
+          exit 1
+        working-directory: ./terraform/production
 
       - name: Capture Terraform Output
         id: output
