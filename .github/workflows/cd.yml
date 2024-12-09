@@ -111,7 +111,15 @@ jobs:
         uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: '6.0.x'
-        
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('tests/RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj') }}
+          restore-keys: |
+            nuget-
+
       - name: Run UI Automated Selenium Tests
         run: |
           dotnet test RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj --logger "console;verbosity=detailed"
