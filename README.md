@@ -75,9 +75,11 @@ Continuous Integration ensures that every change to the codebase is automaticall
 5. **🔍 CodeQL Analysis**: Performs CodeQL analysis on the codebase to identify potential security vulnerabilities.
 6. **🧪 Run Tests**: Runs unit tests and uploads test results.
 
-Mermaid diagram:
+
+✨ **Interactive Diagram Below!** ✨
+
 <details>
-  <summary>CI Workflow Steps</summary>
+  <summary style="font-size: 1.2em; font-weight: bold; color: #0073e6; cursor: pointer;">🔍 Click to expand and view the CI Workflow Steps chart</summary>
 
 ```mermaid
 graph TD
@@ -149,10 +151,12 @@ Continuous Delivery automatically deploys the application to Azure Container App
 9. **📄 Capture Terraform Output**: Captures the Terraform output.
 10. **🏷️ Create GitHub Release**: Creates a GitHub release with the deployment details.
 
+✨ **Interactive Diagram Below!** ✨
 <details>
-    <summary>CD Workflow Steps</summary>
+  <summary style="font-size: 1.2em; font-weight: bold; color: #0073e6; cursor: pointer;">🔍 Click to expand and view the CD Workflow Steps chart</summary>
 
 ```mermaid
+
 graph TD
     subgraph Build and Push Docker Image
         A[🐳 Build Docker Image<br>Build the Docker image]
@@ -189,6 +193,7 @@ graph TD
 
     B --> F
     B --> L
+
 ```
 
 </details>
