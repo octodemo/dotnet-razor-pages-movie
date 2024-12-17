@@ -37,7 +37,7 @@ namespace RazorPagesMovie.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Rating = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true),
-                    Timestamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false, defaultValue: new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 })
+                    Timestamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {

@@ -14,11 +14,20 @@ namespace RazorPagesMovie.Data
 
         public DbSet<Movie> Movie { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
+        public DbSet<Director> Directors { get; set; } = default!;
+        public DbSet<Review> Reviews { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Director configuration
+            modelBuilder.Entity<Director>(entity =>
+            {
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.BirthDate).IsRequired();
+            });
+            
             // User configuration
             modelBuilder.Entity<User>(entity =>
             {
@@ -38,8 +47,7 @@ namespace RazorPagesMovie.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(m => m.UserId);
-                entity.Property(m => m.Timestamp).IsConcurrencyToken();
-                entity.Property(m => m.Timestamp).HasDefaultValue(new byte[8]); // Set default value for Timestamp
+                entity.Property(m => m.Timestamp).IsRowVersion(); // Ensure Timestamp is configured as rowversion
             });
 
             // Seed data with hashed passwords
@@ -88,6 +96,11 @@ namespace RazorPagesMovie.Data
                     Role = UserRole.Standard,
                     Timestamp = new byte[8]
                 });
+            }
+
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.NoAction; // Or DeleteBehavior.Restrict
             }
         }
 
