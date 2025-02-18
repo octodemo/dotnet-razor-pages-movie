@@ -14,6 +14,7 @@ namespace RazorPagesMovie.Data
 
         public DbSet<Movie> Movie { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
+        public DbSet<Artist> Artists { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +41,14 @@ namespace RazorPagesMovie.Data
                 entity.HasIndex(m => m.UserId);
                 entity.Property(m => m.Timestamp).IsConcurrencyToken();
                 entity.Property(m => m.Timestamp).HasDefaultValue(new byte[8]); // Set default value for Timestamp
+            });
+
+            // Artist configuration
+            modelBuilder.Entity<Artist>(entity =>
+            {
+                entity.Property(a => a.Name).IsRequired().HasMaxLength(100);
+                entity.Property(a => a.Bio).HasMaxLength(1000);
+                entity.Property(a => a.Timestamp).IsConcurrencyToken();
             });
 
             // Seed data with hashed passwords
