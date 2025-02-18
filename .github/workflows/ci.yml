@@ -296,3 +296,49 @@ jobs:
           INDEX_LIST=$(seq 0 ${MAX_INDEX}) # generate the list of indexes
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST}) # convert the list to the json
           echo "json=${INDEX_JSON}" >> $GITHUB_OUTPUT # save the json to the GITHUB_OUTPUT environment variable
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Install .NET Code Analyzer
+        run: dotnet tool install --global dotnet-format
+
+      - name: Run .NET Code Analyzer
+        run: dotnet format --check
+        env:
+          PATH: ${{ runner.tool_cache }}/.dotnet/tools:$PATH
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Run SonarScanner
+        run: dotnet sonarscanner begin /k:"${{ github.repository }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+        env:
+          PATH: ${{ runner.tool_cache }}/.dotnet/tools:$PATH
+
+      - name: Build solution
+        run: dotnet build RazorPagesMovie.sln
+
+      - name: End SonarScanner
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        env:
+          PATH: ${{ runner.tool_cache }}/.dotnet/tools:$PATH
