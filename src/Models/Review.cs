@@ -11,12 +11,12 @@ namespace RazorPagesMovie.Models
         [Required]
         public int MovieId { get; set; }
         [ForeignKey("MovieId")] // Add ForeignKey attribute
-        public Movie Movie { get; set; } // Navigation property
+        public Movie? Movie { get; set; } // Navigation property
 
         [Required]
         public int UserId { get; set; }
         [ForeignKey("UserId")] // Add ForeignKey attribute
-        public User User { get; set; } // Navigation property
+        public User? User { get; set; } // Navigation property
 
         [Range(1, 5)]
         public int Rating { get; set; }
