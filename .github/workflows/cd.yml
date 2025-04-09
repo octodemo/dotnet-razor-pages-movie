@@ -113,7 +113,7 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.2.2
         with:
           path: ~/.nuget/packages
           key: nuget-ui-tests-${{ hashFiles('tests/RazorPagesMovie.UITests/RazorPagesMovie.UITests.csproj') }}
