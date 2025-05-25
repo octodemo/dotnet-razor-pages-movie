@@ -11,10 +11,10 @@ on:
         required: false
         default: false
       debug_deployment:
-        type: string
+        type: boolean
         description: 'Run the pipeline with debug deployment enabled'
         required: false
-        default: 'false'
+        default: false
       full_pipeline:
         type: boolean
         description: 'Run the full pipeline to production'
@@ -246,7 +246,7 @@ jobs:
     outputs:
       image_tag: ${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
     needs: [build, test] # depend on the build job to get the published app artifact
-    if: ${{ github.event.inputs.full_pipeline && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request_target' && github.base_ref == 'main' && github.head_ref == 'develop')) }}
+    if: ${{ github.event.inputs.full_pipeline && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request_target' && github.base_ref == 'main' && github.head_ref == 'develop')) }}
     permissions:
       packages: write
       id-token: write
