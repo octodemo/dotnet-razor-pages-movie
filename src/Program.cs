@@ -75,6 +75,11 @@ app.Use(async (context, next) =>
     {
         isAuthenticated = context.Session.GetInt32("UserId").HasValue;
     }
+    else
+    {
+        // If session is disabled, treat all users as authenticated to avoid redirect loops
+        isAuthenticated = true;
+    }
     if (!isAuthenticated && !isAccountPage && !path.StartsWithSegments("/Index"))
     {
         context.Response.Redirect("/Account/Login");
@@ -161,6 +166,11 @@ app.Use(async (context, next) =>
     if (sessionEnabled)
     {
         isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+    }
+    else
+    {
+        // If session is disabled, treat all users as authenticated to avoid redirect loops
+        isAuthenticated = true;
     }
     if (!isAuthenticated && !isAccountPage && !path.StartsWithSegments("/Index"))
     {
