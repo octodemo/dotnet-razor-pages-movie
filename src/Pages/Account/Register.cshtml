@@ -25,7 +25,11 @@
         <input asp-for="RegisterUser.Password" type="password" class="form-control" />
         <span asp-validation-for="RegisterUser.Password" class="text-danger"></span>
     </div>
-    @if (HttpContext.Session.GetString("UserRole") == "Admin")
+    @{
+        var sessionEnabled = Environment.GetEnvironmentVariable("DISABLE_SESSION")?.ToLower() != "true";
+        string userRole = sessionEnabled ? HttpContext.Session.GetString("UserRole") : null;
+    }
+    @if (sessionEnabled && userRole == "Admin")
     {
         <div class="form-group">
             <label asp-for="RegisterUser.Role">User Role</label>

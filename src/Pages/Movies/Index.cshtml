@@ -3,7 +3,8 @@
 
 @{
     ViewData["Title"] = "Movies";
-    var userRole = HttpContext.Session.GetString("UserRole");
+    var sessionEnabled = Environment.GetEnvironmentVariable("DISABLE_SESSION")?.ToLower() != "true";
+    var userRole = sessionEnabled ? HttpContext.Session.GetString("UserRole") : null;
 }
 
 <div class="movies-container">

@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var sessionEnabled = Environment.GetEnvironmentVariable("DISABLE_SESSION")?.ToLower() != "true";
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -19,21 +22,35 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Movies/Index">Movies</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Movies/Index">Movies</a>
                         </li>
-                        @if (Context.Session.GetInt32("UserId") != null)
+                        @if (sessionEnabled)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Account/Logout">Logout</a>
-                            </li>
+                            // Example: Only show user info if session is enabled
+                            if (Context.Session.GetInt32("UserId") != null)
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link">Hello, @Context.Session.GetString("Username")!</span>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Account/Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Account/Login">Login</a>
+                                </li>
+                            }
                         }
                         else
                         {
+                            // Session is disabled: show generic UI or nothing
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Account/Login">Login</a>
+                                <span class="nav-link">(Session Disabled)</span>
                             </li>
                         }
                     </ul>
