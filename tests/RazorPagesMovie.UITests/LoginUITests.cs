@@ -6,6 +6,7 @@ using SeleniumExtras.WaitHelpers;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using RazorPagesMovie.UITests;
 
 namespace RazorPagesMovie.UITests
 {
