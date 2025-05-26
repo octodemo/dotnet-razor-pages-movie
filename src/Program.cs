@@ -12,7 +12,8 @@ builder.Logging.AddConsole();
 
 builder.Services.AddRazorPages();
 var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
-if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+var sessionEnabled = string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true";
+if (sessionEnabled)
 {
     builder.Services.AddSession(options =>
     {
@@ -61,7 +62,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+if (sessionEnabled)
 {
     app.UseSession();
 }
@@ -69,8 +70,11 @@ app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
     var isAccountPage = path.StartsWithSegments("/Account");
-    var isAuthenticated = context.Session.GetInt32("UserId").HasValue;
-
+    var isAuthenticated = false;
+    if (sessionEnabled)
+    {
+        isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+    }
     if (!isAuthenticated && !isAccountPage && !path.StartsWithSegments("/Index"))
     {
         context.Response.Redirect("/Account/Login");
@@ -95,7 +99,8 @@ builder.Logging.AddConsole();
 
 builder.Services.AddRazorPages();
 var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
-if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+var sessionEnabled = string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true";
+if (sessionEnabled)
 {
     builder.Services.AddSession(options =>
     {
@@ -144,7 +149,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+if (sessionEnabled)
 {
     app.UseSession();
 }
@@ -152,8 +157,11 @@ app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
     var isAccountPage = path.StartsWithSegments("/Account");
-    var isAuthenticated = context.Session.GetInt32("UserId").HasValue;
-
+    var isAuthenticated = false;
+    if (sessionEnabled)
+    {
+        isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+    }
     if (!isAuthenticated && !isAccountPage && !path.StartsWithSegments("/Index"))
     {
         context.Response.Redirect("/Account/Login");
