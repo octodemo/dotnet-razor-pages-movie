@@ -32,6 +32,11 @@ resource "azurerm_container_app" "staging" {
         name  = "ConnectionStrings__RazorPagesMovieContext"
         value = "Server=${var.sql_server_name}.database.windows.net,1433;Database=${azurerm_mssql_database.staging.name};User ID=${var.sql_admin_username};Password=${var.sql_admin_password};"
       }
+
+      env {
+        name  = "DISABLE_SESSION"
+        value = "true"
+      }
     }
   }
 }

@@ -11,12 +11,16 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.AddRazorPages();
-builder.Services.AddSession(options =>
+var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
+if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+}
 builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
 
@@ -57,7 +61,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-app.UseSession();
+if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+{
+    app.UseSession();
+}
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
@@ -87,12 +94,16 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.AddRazorPages();
-builder.Services.AddSession(options =>
+var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
+if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+}
 builder.Services.AddDbContext<RazorPagesMovieContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("RazorPagesMovieContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
 
@@ -133,7 +144,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
-app.UseSession();
+if (string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true")
+{
+    app.UseSession();
+}
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
