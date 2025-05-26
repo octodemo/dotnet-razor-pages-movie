@@ -72,7 +72,6 @@ app.Use(async (context, next) =>
 
     await next();
 });
-app.MapHealthChecks("/health");
 app.MapRazorPages();
 
 app.Run();
