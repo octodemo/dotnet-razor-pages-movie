@@ -35,7 +35,17 @@ resource "azurerm_container_app" "staging" {
 
       env {
         name  = "DISABLE_SESSION"
-        value = "true"
+        value = "false"
+      }
+
+      env {
+        name  = "AZURE_BLOB_KEYRING_CONNECTION_STRING"
+        value = "DefaultEndpointsProtocol=https;AccountName=razorpagesmoviestorage;AccountKey=kOXkWNLVhNZk/dTU6bH6ZOcrPrpeC13gms2XdOA/fqAGB+sUNgqnjI4yn07ODMkbacJxlL2oqliF+AStuZxNxw==;EndpointSuffix=core.windows.net"
+      }
+
+      env {
+        name  = "AZURE_BLOB_KEYRING_CONTAINER"
+        value = "dataprotection"
       }
     }
   }

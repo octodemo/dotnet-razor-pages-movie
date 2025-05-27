@@ -11,6 +11,11 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
+# Set Azure Data Protection key ring environment variables for session reliability
+ENV AZURE_BLOB_KEYRING_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=razorpagesmoviestorage;AccountKey=kOXkWNLVhNZk/dTU6bH6ZOcrPrpeC13gms2XdOA/fqAGB+sUNgqnjI4yn07ODMkbacJxlL2oqliF+AStuZxNxw==;EndpointSuffix=core.windows.net"
+ENV AZURE_BLOB_KEYRING_CONTAINER="dataprotection"
+# ENV AZURE_BLOB_KEYRING_BLOB="dataprotection-keys.xml"  # Optional, default is fine
+
 # Copy all files in the publish directory
 COPY ./publish .
 

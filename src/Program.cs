@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,16 @@ var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
 var sessionEnabled = string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true";
 if (sessionEnabled)
 {
+    // Configure Data Protection to persist keys to Azure Blob Storage if connection string and container are set
+    var blobConnStr = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_CONNECTION_STRING");
+    var blobContainer = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_CONTAINER");
+    var blobName = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_BLOB") ?? "dataprotection-keys.xml";
+    if (!string.IsNullOrEmpty(blobConnStr) && !string.IsNullOrEmpty(blobContainer))
+    {
+        builder.Services.AddDataProtection()
+            .PersistKeysToAzureBlobStorage(blobConnStr, blobContainer, blobName)
+            .SetApplicationName("RazorPagesMovie");
+    }
     builder.Services.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -73,7 +84,16 @@ app.Use(async (context, next) =>
     var isAuthenticated = false;
     if (sessionEnabled)
     {
-        isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+        // Defensive: Only check session if session cookie exists
+        if (context.Request.Cookies.ContainsKey(".AspNetCore.Session"))
+        {
+            isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+        }
+        else
+        {
+            // No session cookie, treat as not authenticated
+            isAuthenticated = false;
+        }
     }
     else
     {
@@ -95,6 +115,7 @@ app.Run();
 using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +128,16 @@ var disableSession = Environment.GetEnvironmentVariable("DISABLE_SESSION");
 var sessionEnabled = string.IsNullOrEmpty(disableSession) || disableSession.ToLower() != "true";
 if (sessionEnabled)
 {
+    // Configure Data Protection to persist keys to Azure Blob Storage if connection string and container are set
+    var blobConnStr = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_CONNECTION_STRING");
+    var blobContainer = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_CONTAINER");
+    var blobName = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_BLOB") ?? "dataprotection-keys.xml";
+    if (!string.IsNullOrEmpty(blobConnStr) && !string.IsNullOrEmpty(blobContainer))
+    {
+        builder.Services.AddDataProtection()
+            .PersistKeysToAzureBlobStorage(blobConnStr, blobContainer, blobName)
+            .SetApplicationName("RazorPagesMovie");
+    }
     builder.Services.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -165,7 +196,16 @@ app.Use(async (context, next) =>
     var isAuthenticated = false;
     if (sessionEnabled)
     {
-        isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+        // Defensive: Only check session if session cookie exists
+        if (context.Request.Cookies.ContainsKey(".AspNetCore.Session"))
+        {
+            isAuthenticated = context.Session.GetInt32("UserId").HasValue;
+        }
+        else
+        {
+            // No session cookie, treat as not authenticated
+            isAuthenticated = false;
+        }
     }
     else
     {
