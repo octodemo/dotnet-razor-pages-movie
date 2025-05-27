@@ -5,6 +5,8 @@ using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AzureStorage;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +25,11 @@ if (sessionEnabled)
     var blobName = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_BLOB") ?? "dataprotection-keys.xml";
     if (!string.IsNullOrEmpty(blobConnStr) && !string.IsNullOrEmpty(blobContainer))
     {
+        var storageAccount = CloudStorageAccount.Parse(blobConnStr);
+        var blobClient = storageAccount.CreateCloudBlobClient();
+        var container = blobClient.GetContainerReference(blobContainer);
         builder.Services.AddDataProtection()
-            .PersistKeysToAzureBlobStorage(blobConnStr, blobContainer, blobName)
+            .PersistKeysToAzureBlobStorage(container, blobName)
             .SetApplicationName("RazorPagesMovie");
     }
     builder.Services.AddSession(options =>
@@ -118,6 +123,8 @@ using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AzureStorage;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -136,8 +143,11 @@ if (sessionEnabled)
     var blobName = Environment.GetEnvironmentVariable("AZURE_BLOB_KEYRING_BLOB") ?? "dataprotection-keys.xml";
     if (!string.IsNullOrEmpty(blobConnStr) && !string.IsNullOrEmpty(blobContainer))
     {
+        var storageAccount = CloudStorageAccount.Parse(blobConnStr);
+        var blobClient = storageAccount.CreateCloudBlobClient();
+        var container = blobClient.GetContainerReference(blobContainer);
         builder.Services.AddDataProtection()
-            .PersistKeysToAzureBlobStorage(blobConnStr, blobContainer, blobName)
+            .PersistKeysToAzureBlobStorage(container, blobName)
             .SetApplicationName("RazorPagesMovie");
     }
     builder.Services.AddSession(options =>
