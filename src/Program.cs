@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AzureStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,7 @@ using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Data;
 using RazorPagesMovie.Models;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AzureStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
