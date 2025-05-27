@@ -77,12 +77,17 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
+
+// Move session before routing/authorization and before custom middleware
 if (sessionEnabled)
 {
     app.UseSession();
 }
+
+app.UseRouting();
+app.UseAuthorization();
+
+// Custom authentication/authorization middleware (needs session)
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
@@ -195,12 +200,17 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
+
+// Move session before routing/authorization and before custom middleware
 if (sessionEnabled)
 {
     app.UseSession();
 }
+
+app.UseRouting();
+app.UseAuthorization();
+
+// Custom authentication/authorization middleware (needs session)
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path;
@@ -236,3 +246,12 @@ app.MapRazorPages();
 
 app.Run();
 #endif
+
+// NOTE: For production or cloud, use a distributed session provider (e.g., Redis) instead of in-memory session.
+// Example:
+// builder.Services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = "<your-redis-connection-string>";
+//     options.InstanceName = "RazorPagesMovie";
+// });
+// builder.Services.AddSession(...);
