@@ -1,0 +1,10 @@
+@page "/test/reset-lockout"
+@model RazorPagesMovie.Pages.TestLockoutResetModel
+@{
+    Layout = null;
+}
+@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") {
+    <text>Lockout reset for IP: @Model.Ip</text>
+} else {
+    <text>Not available in production.</text>
+}
