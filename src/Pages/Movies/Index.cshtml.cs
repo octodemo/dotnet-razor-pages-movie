@@ -25,21 +25,24 @@ namespace RazorPagesMovie.Pages.Movies
         [BindProperty(SupportsGet = true)]
         public string? MovieGenre { get; set; }
 
-        public async Task OnGetAsync()
+        public string? UserRole { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            // Redirect unauthenticated users to login page
-            if (User?.Identity == null || !User.Identity.IsAuthenticated)
+            var sessionEnabled = Environment.GetEnvironmentVariable("DISABLE_SESSION")?.ToLower() != "true";
+            // Only check session if we have a valid HttpContext with Session functionality
+            if (sessionEnabled && HttpContext?.Session != null && HttpContext.Session.GetInt32("UserId") == null)
             {
-                if (Response != null && User != null)
+                if (Response != null)
                 {
                     Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
                     Response.Headers["Pragma"] = "no-cache";
                     Response.Headers["Expires"] = "0";
-                    Response.Redirect("/Account/Login");
-                    return;
                 }
-                // In test context, just continue so tests can run
+                return RedirectToPage("/Account/Login");
             }
+            // Get user role from session (safely)
+            UserRole = sessionEnabled ? HttpContext?.Session?.GetString("UserRole") : null;
             // Add anti-cache headers to prevent browser from caching this page
             if (Response != null)
             {
@@ -47,26 +50,23 @@ namespace RazorPagesMovie.Pages.Movies
                 Response.Headers["Pragma"] = "no-cache";
                 Response.Headers["Expires"] = "0";
             }
-
             // Use LINQ to get list of genres.
             IQueryable<string> genreQuery = from m in _context.Movie
                                             orderby m.Genre
                                             select m.Genre;
-
             var movies = from m in _context.Movie
                          select m;
-
             if (!string.IsNullOrEmpty(SearchString))
             {
                 movies = movies.Where(s => s.Title.Contains(SearchString));
             }
-
             if (!string.IsNullOrEmpty(MovieGenre))
             {
                 movies = movies.Where(x => x.Genre == MovieGenre);
             }
             Genres = new SelectList(await genreQuery.Distinct().ToListAsync());
             Movie = await movies.ToListAsync();
+            return Page();
         }
     }
 }

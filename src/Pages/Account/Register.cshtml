@@ -9,7 +9,7 @@
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
-    <div class="alert alert-danger" role="alert">
+    <div class="field-validation-error" role="alert">
         @Model.ErrorMessage
     </div>
 }

@@ -3,8 +3,6 @@
 
 @{
     ViewData["Title"] = "Movies";
-    var sessionEnabled = Environment.GetEnvironmentVariable("DISABLE_SESSION")?.ToLower() != "true";
-    var userRole = sessionEnabled ? HttpContext.Session.GetString("UserRole") : null;
 }
 
 <div class="movies-container">
@@ -47,8 +45,9 @@
                         <p class="card-text"><strong>Genre:</strong> @item.Genre</p>
                         <p class="card-text"><strong>Price:</strong> @item.Price.ToString("c")</p>
                         <p class="card-text"><strong>Rating:</strong> @item.Rating</p>
-                        @if (userRole == "Admin")
+                        @if (Model.UserRole == "Admin")
                         {
+                            <div id="admin-indicator" style="display:none"></div>
                             <div class="movie-actions">
                                 <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
                                 <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>

@@ -8,6 +8,10 @@
 
 <div class="row justify-content-center">
     <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="field-validation-error text-center mt-3">@Model.ErrorMessage</div>
+        }
         <form method="post">
             <div class="form-group">
                 <label asp-for="LoginInput.Username" class="control-label"></label>
@@ -23,10 +27,6 @@
                 <button type="submit" class="btn btn-primary">Login</button>
             </div>
         </form>
-        @if (Model.ErrorMessage != null)
-        {
-            <div class="text-danger text-center mt-3">@Model.ErrorMessage</div>
-        }
     </div>
 </div>
 
