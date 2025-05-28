@@ -28,6 +28,20 @@ namespace RazorPagesMovie.Models
                             Password = "demo123", // In production, use password hashing
                             Role = UserRole.Standard,
                             Timestamp = Array.Empty<byte>()
+                        },
+                        new User
+                        {
+                            Username = "user",
+                            Password = "password", // Test user for UI tests
+                            Role = UserRole.Standard,
+                            Timestamp = Array.Empty<byte>()
+                        },
+                        new User
+                        {
+                            Username = "admin",
+                            Password = "password", // Admin test user for UI tests
+                            Role = UserRole.Admin,
+                            Timestamp = Array.Empty<byte>()
                         }
                     );
                     context.SaveChanges();

@@ -24,13 +24,57 @@ namespace RazorPagesMovie.UITests
         private static readonly object _lock = new object();
         private bool _disposed = false;
         private static System.Net.Http.HttpClient _httpClient;
+        private static int _instanceCount = 0;
+        private static readonly object _httpClientLock = new object();
         
         public WebDriverFixture()
         {
-            // Initialize shared HttpClient if needed
-            if (_httpClient == null)
+            lock (_httpClientLock)
             {
-                _httpClient = new System.Net.Http.HttpClient();
+                _instanceCount++;
+                Console.WriteLine($"WebDriverFixture instance created. Count: {_instanceCount}");
+                
+                // Initialize HttpClient with proper configuration for CI/CD environments
+                if (_httpClient == null || IsHttpClientDisposed(_httpClient))
+                {
+                    if (_httpClient != null)
+                    {
+                        Console.WriteLine("HttpClient was disposed, creating a new instance");
+                    }
+                    
+                    _httpClient = CreateHttpClient();
+                }
+            }
+        }
+        
+        private static System.Net.Http.HttpClient CreateHttpClient()
+        {
+            var httpClient = new System.Net.Http.HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(30); // Set reasonable timeout
+            
+            // Add headers that might be needed for Azure Container Apps
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "RazorPagesMovie-UITests/1.0");
+            
+            Console.WriteLine("Created new HttpClient instance");
+            return httpClient;
+        }
+        
+        private static bool IsHttpClientDisposed(System.Net.Http.HttpClient client)
+        {
+            try
+            {
+                // Try to access a property that would throw if disposed
+                var timeout = client.Timeout;
+                return false;
+            }
+            catch (ObjectDisposedException)
+            {
+                return true;
+            }
+            catch (Exception)
+            {
+                // Other exceptions mean it's not disposed
+                return false;
             }
         }
         
@@ -60,25 +104,14 @@ namespace RazorPagesMovie.UITests
         
         public System.Net.Http.HttpClient GetHttpClient()
         {
-            if (_httpClient == null)
+            lock (_httpClientLock)
             {
-                _httpClient = new System.Net.Http.HttpClient();
-            }
-            else
-            {
-                // Check if HttpClient is disposed
-                try
+                if (_httpClient == null || IsHttpClientDisposed(_httpClient))
                 {
-                    // Try to access a property that would throw if disposed
-                    var baseAddress = _httpClient.BaseAddress;
+                    _httpClient = CreateHttpClient();
                 }
-                catch (ObjectDisposedException)
-                {
-                    Console.WriteLine("HttpClient was disposed, creating a new instance");
-                    _httpClient = new System.Net.Http.HttpClient();
-                }
+                return _httpClient;
             }
-            return _httpClient;
         }
         
         private void DisposeDriverOnly()
@@ -141,18 +174,32 @@ namespace RazorPagesMovie.UITests
 
         private DriverOptions GetOptions(string browser)
         {
+            bool isCI = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS"));
+            Console.WriteLine($"Running in CI environment: {isCI}");
+            
             switch (browser.ToLower())
             {
                 case "firefox":
                     var firefoxOptions = new FirefoxOptions();
                     firefoxOptions.AcceptInsecureCertificates = true;
                     firefoxOptions.AddArgument("--headless");
+                    if (isCI)
+                    {
+                        firefoxOptions.AddArgument("--no-sandbox");
+                        firefoxOptions.AddArgument("--disable-gpu");
+                    }
                     return firefoxOptions;
 
                 case "edge":
                     var edgeOptions = new EdgeOptions();
                     edgeOptions.AcceptInsecureCertificates = true;
                     edgeOptions.AddArgument("--headless");
+                    if (isCI)
+                    {
+                        edgeOptions.AddArgument("--no-sandbox");
+                        edgeOptions.AddArgument("--disable-gpu");
+                        edgeOptions.AddArgument("--disable-dev-shm-usage");
+                    }
                     return edgeOptions;
 
                 case "chromium":
@@ -168,6 +215,21 @@ namespace RazorPagesMovie.UITests
                     chromeOptions.AddArgument("--disable-sync");
                     chromeOptions.AddArgument("--disable-background-networking");
                     chromeOptions.AddArgument("--window-size=1280,1024");
+                    
+                    if (isCI)
+                    {
+                        // Additional options for CI environments
+                        chromeOptions.AddArgument("--disable-gpu");
+                        chromeOptions.AddArgument("--disable-background-timer-throttling");
+                        chromeOptions.AddArgument("--disable-backgrounding-occluded-windows");
+                        chromeOptions.AddArgument("--disable-renderer-backgrounding");
+                        chromeOptions.AddArgument("--disable-features=TranslateUI");
+                        chromeOptions.AddArgument("--disable-ipc-flooding-protection");
+                        chromeOptions.AddArgument("--no-first-run");
+                        chromeOptions.AddArgument("--disable-default-apps");
+                        chromeOptions.AddArgument("--disable-component-extensions-with-background-pages");
+                    }
+                    
                     return chromeOptions;
             }
         }
@@ -176,33 +238,49 @@ namespace RazorPagesMovie.UITests
         {
             if (!_disposed)
             {
-                // Only dispose the driver when the fixture itself is being disposed
-                // which should happen at the end of the collection
-                if (_driver != null)
+                lock (_httpClientLock)
                 {
-                    try
+                    _instanceCount--;
+                    Console.WriteLine($"WebDriverFixture disposing. Remaining instances: {_instanceCount}");
+                    
+                    // Only dispose resources when this is the last instance
+                    if (_instanceCount <= 0)
                     {
-                        _driver.Quit();
-                        _driver.Dispose();
-                        _driver = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error disposing WebDriver: {ex.Message}");
-                    }
-                }
-                
-                // Dispose HttpClient too
-                if (_httpClient != null)
-                {
-                    try
-                    {
-                        _httpClient.Dispose();
-                        _httpClient = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error disposing HttpClient: {ex.Message}");
+                        Console.WriteLine("Last WebDriverFixture instance - disposing shared resources");
+                        
+                        // Dispose WebDriver
+                        if (_driver != null)
+                        {
+                            try
+                            {
+                                _driver.Quit();
+                                _driver.Dispose();
+                                _driver = null;
+                                Console.WriteLine("WebDriver disposed");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error disposing WebDriver: {ex.Message}");
+                            }
+                        }
+                        
+                        // Dispose HttpClient
+                        if (_httpClient != null)
+                        {
+                            try
+                            {
+                                _httpClient.Dispose();
+                                _httpClient = null;
+                                Console.WriteLine("HttpClient disposed");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error disposing HttpClient: {ex.Message}");
+                            }
+                        }
+                        
+                        // Reset instance count to prevent negative values
+                        _instanceCount = 0;
                     }
                 }
                 
