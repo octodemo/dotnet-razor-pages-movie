@@ -107,6 +107,22 @@ jobs:
       if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
       run: dotnet build RazorPagesMovie.sln --configuration Release --no-restore
 
+    - name: Run Code Analysis and Linting
+      if: matrix.language == 'csharp' && matrix.build-mode == 'manual'
+      run: |
+        echo "Running static analysis and linting checks..."
+        dotnet build RazorPagesMovie.sln --configuration Release --verbosity normal --no-restore | tee build-output.log
+        
+        # Count warnings from our static analysis tools
+        ANALYZER_WARNINGS=$(grep -c "warning SA\|warning CA" build-output.log || true)
+        echo "Static analysis warnings found: $ANALYZER_WARNINGS"
+        
+        # For now, we'll log the count but not fail the build to avoid breaking existing CI
+        # In a production environment, you might want to set thresholds or fail on new warnings
+        if [ "$ANALYZER_WARNINGS" -gt 0 ]; then
+          echo "::notice title=Static Analysis::Found $ANALYZER_WARNINGS static analysis warnings. Consider addressing them to improve code quality."
+        fi
+
     # - name: Set runtime
     #   if: matrix.language == 'csharp'
     #   id: set-runtime
