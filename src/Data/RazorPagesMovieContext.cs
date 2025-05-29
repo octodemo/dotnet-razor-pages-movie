@@ -16,6 +16,7 @@ namespace RazorPagesMovie.Data
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<Director> Directors { get; set; } = default!;
         public DbSet<Review> Reviews { get; set; } = default!;
+        public DbSet<Artist> Artists { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,14 @@ namespace RazorPagesMovie.Data
             {
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.BirthDate).IsRequired();
+            });
+
+            // Artist configuration
+            modelBuilder.Entity<Artist>(entity =>
+            {
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.BirthDate).IsRequired();
+                entity.Property(e => e.Nationality).HasMaxLength(50);
             });
             
             // User configuration
