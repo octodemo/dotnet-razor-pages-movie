@@ -94,8 +94,10 @@ jobs:
   ui-tests:
     needs: setup-staging-environment
     permissions:
-      actions: read
+      actions: write
       contents: read
+      checks: write
+      pull-requests: write
 
     strategy:
       matrix:
@@ -104,6 +106,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Workflow Telemetry - Collect performance metrics
+        uses: catchpoint/workflow-telemetry-action@v2.0.0
+
       - name: Checkout code
         uses: actions/checkout@v4.1.7
 
@@ -127,19 +132,6 @@ jobs:
         env:
           BROWSER: ${{ matrix.browser }}
           BASE_URL: "https://${{ needs.setup-staging-environment.outputs.CONTAINER_APP_URL }}"
-
-  workflow-telemetry:
-    needs: [ui-tests]
-    permissions:
-      actions: write
-      contents: read
-      checks: write
-      pull-requests: write
-    
-    runs-on: ubuntu-latest
-    steps:
-      - name: Workflow Telemetry - Generate heat map and performance data
-        uses: catchpoint/workflow-telemetry-action@v2.0.0
 
   create-qa-ticket:
     needs: [ui-tests, setup-staging-environment]
