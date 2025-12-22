@@ -51,3 +51,22 @@ resource "azurerm_container_app" "staging" {
     }
   }
 }
+
+# Patch Sticky sessions for UI test consistency
+resource "azapi_update_resource" "sticky_session_staging" {
+  type        = "Microsoft.App/containerApps@2024-03-01"
+  resource_id = azurerm_container_app.staging.id
+  body = {
+    properties = {
+      configuration = {
+        ingress = {
+          stickySessions = {
+            affinity = "sticky"
+          }
+        }
+      }
+    }
+  }
+
+  depends_on = [azurerm_container_app.staging]
+}

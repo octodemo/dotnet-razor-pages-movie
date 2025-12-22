@@ -6,6 +6,10 @@ terraform {
     azurerm = {
       source  = "hashicorp/azurerm"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~>2.0"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "tsvi-rg"
