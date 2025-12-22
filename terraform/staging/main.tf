@@ -13,6 +13,7 @@ resource "azurerm_container_app" "staging" {
   ingress {
     external_enabled = true
     target_port      = 80
+    transport        = "http"
 
     traffic_weight {
       percentage      = 100

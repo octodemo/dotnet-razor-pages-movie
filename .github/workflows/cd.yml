@@ -130,8 +130,12 @@ jobs:
 
   workflow-telemetry:
     needs: [ui-tests]
+    permissions:
+      actions: write
+      contents: read
+      checks: write
+    
     runs-on: ubuntu-latest
-
     steps:
       - name: Workflow Telemetry - Generate heat map and performance data
         uses: catchpoint/workflow-telemetry-action@v2.0.0
