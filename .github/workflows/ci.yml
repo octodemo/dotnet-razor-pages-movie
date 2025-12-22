@@ -246,7 +246,7 @@ jobs:
     outputs:
       image_tag: ${{ github.run_number }} # output the image tag to be used in the build-and-publish-docker-image job
     needs: [build, test] # depend on the build job to get the published app artifact
-    if: ${{ github.event.inputs.full_pipeline && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request_target' && github.base_ref == 'main' && github.head_ref == 'develop')) }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.full_pipeline && github.ref == 'refs/heads/main') }}
     permissions:
       packages: write
       id-token: write
@@ -283,7 +283,7 @@ jobs:
 
   deploy:
     needs: [build-and-publish-docker-image] # this job needs build-and-publish-docker-image job as a requirement to run
-    if: ${{ github.event.inputs.full_pipeline }}
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.full_pipeline && github.ref == 'refs/heads/main') }}
     uses: ./.github/workflows/cd.yml
     with:
       # with tag from the build-and-publish-docker-image job in the output_tags step
