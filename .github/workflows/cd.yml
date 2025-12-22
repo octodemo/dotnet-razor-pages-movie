@@ -134,6 +134,7 @@ jobs:
       actions: write
       contents: read
       checks: write
+      pull-requests: write
     
     runs-on: ubuntu-latest
     steps:
