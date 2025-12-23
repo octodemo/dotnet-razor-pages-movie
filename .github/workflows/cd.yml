@@ -98,7 +98,6 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
-      id-token: write
 
     strategy:
       matrix:
@@ -107,8 +106,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Workflow Telemetry - Collect performance metrics
-        uses: catchpoint/workflow-telemetry-action@v2.0.0
 
       - name: Checkout code
         uses: actions/checkout@v4.1.7
