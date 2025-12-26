@@ -75,6 +75,9 @@ jobs:
           runner: ubuntu-latest
 
     steps:
+    - name: Runner Telemetry Action
+      uses: tsviz/actions-runner-telemetry@v1
+    
     - name: Checkout code
       uses: actions/checkout@v4.2.2
 
