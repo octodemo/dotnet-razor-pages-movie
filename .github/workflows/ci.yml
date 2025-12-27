@@ -233,31 +233,26 @@ jobs:
   publish-test-results:
     needs: test
     runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: read
+      checks: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4.2.2
 
-    - name: List Artifacts
-      id: list-artifacts
-      run: |
-        curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-             -H 'Accept: application/vnd.github.v3+json' \
-             https://api.github.com/repos/octodemo/dotnet-razor-pages-movie/actions/runs/${{ github.run_id }}/artifacts > artifacts.json
-
-    - name: Download Artifacts
-      run: |
-        mkdir -p test_results
-        for url in $(jq -r '.artifacts[] | select(.name | startswith("testresults-")) | .archive_download_url' artifacts.json); do
-            artifact_name=$(echo $url | awk -F/ '{print $NF}' | awk -F? '{print $1}')
-            curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} -L -o test_results/testresults.zip $url
-            unzip -o test_results/testresults.zip -d test_results
-            rm test_results/testresults.zip
-        done
+    - name: Download all test result artifacts
+      uses: actions/download-artifact@v4.1.8
+      with:
+        pattern: testresults-*
+        path: test_results
+        merge-multiple: true
 
     - name: Publish Test Results
       uses: dorny/test-reporter@v1.8.0
       if: always()
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         reporter: dotnet-trx
         name: xUnit Test Results
         path: test_results/**/*.trx
