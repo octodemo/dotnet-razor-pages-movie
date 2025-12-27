@@ -144,7 +144,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: runner-telemetry
+        name: runner-telemetry-${{ matrix.language }}
         path: |
           telemetry-report.html
           telemetry-raw.json
