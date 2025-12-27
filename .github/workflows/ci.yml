@@ -132,6 +132,12 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
 
+    - name: Generate report
+      if: always()  # Runs even if steps fail
+      uses: tsviz/actions-runner-telemetry@v1
+      with:
+        mode: stop
+
   test:
     runs-on: ${{ matrix.os }}
     needs: 
