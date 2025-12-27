@@ -140,6 +140,16 @@ jobs:
       with:
         mode: stop
 
+    - name: Upload report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: runner-telemetry
+        path: |
+          telemetry-report.html
+          telemetry-raw.json
+          telemetry-samples.csv
+
   test:
     runs-on: ${{ matrix.os }}
     needs: 
