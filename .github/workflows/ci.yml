@@ -146,7 +146,8 @@ jobs:
       with:
         name: runner-telemetry-${{ matrix.language }}
         path: |
-          telemetry-report.html
+          telemetry-dashboard.html
+          telemetry-report.md
           telemetry-raw.json
           telemetry-samples.csv
 
