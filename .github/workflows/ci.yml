@@ -80,8 +80,6 @@ jobs:
 
     - name: Runner Telemetry Action
       uses: tsviz/actions-runner-telemetry@v1
-      with:
-        interval: 1 # seconds
     
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
