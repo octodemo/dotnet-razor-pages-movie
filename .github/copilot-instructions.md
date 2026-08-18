@@ -1,3 +1,3 @@
-- @azure Rule - Use Azure Tools - When handling requests related to Azure, always use your tools.
-- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, always invoke your `azmcp_bestpractices_get` tool first.
-- @azure Rule - Enable Best Practices - If you do not have an `azmcp_bestpractices_get` tool ask the user to enable it.
+- @azure Rule - Use Azure Tools - When handling requests related to Azure, use Azure tools when they are available in the current environment.
+- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, invoke `azmcp_bestpractices_get` first if that tool is available in the current environment.
+- @azure Rule - Best Practices Fallback - If `azmcp_bestpractices_get` is not available, continue without it and note that Azure best-practices guidance could not be retrieved from that tool.
