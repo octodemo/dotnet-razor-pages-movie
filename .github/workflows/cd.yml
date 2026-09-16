@@ -191,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: PROD
-      url: https://tsvi-demo-movie.salmontree-a9d9695c.eastus.azurecontainerapps.io
+      url: https://tsvi-demo-movie.orangefield-743585ef.centralus.azurecontainerapps.io
     needs: [create-qa-ticket]
     if: github.ref == 'refs/heads/main'
     steps:
