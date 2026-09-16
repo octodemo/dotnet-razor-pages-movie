@@ -31,7 +31,10 @@ jobs:
       - name: Terraform Destroy
         run: |
           terraform init
-          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' || {
+            echo "::warning::Terraform destroy failed; retrying once after refreshing remote state."
+            terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+          }
         working-directory: ./terraform/staging
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -60,7 +63,10 @@ jobs:
       - name: Terraform Destroy
         run: |
           terraform init
-          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+          terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}' || {
+            echo "::warning::Terraform destroy failed; retrying once after refreshing remote state."
+            terraform destroy -auto-approve -var 'sql_admin_password=${{ secrets.SA_PASSWORD }}'
+          }
         working-directory: ./terraform/production
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
